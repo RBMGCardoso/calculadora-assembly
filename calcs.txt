@@ -1,0 +1,4 @@
+Tamanho total tela: 320x200
+Margens laterais: 10 (each)
+Quadrados: 25
+Margem entre quadrados: 
