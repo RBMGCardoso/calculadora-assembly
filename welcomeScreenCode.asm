@@ -181,7 +181,6 @@ recebeMouseKeyboardInput proc
     
     CMP al, 031H
     JE confirmDivision
-    JNE keyBoardInput
     
     CMP al, 032H
     JE confirmSqrt
