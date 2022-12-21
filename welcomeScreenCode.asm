@@ -5,8 +5,7 @@ y DW 100
 input DW 0
 welcomeString DB '               ALGORITMOS$' 
 startString DB '           PRESSIONE UM BOTAO$'
-divisaoString DB '     DIVISAO$'
-raizString DB '                                                     RAIZ QUADRADA$'
+buttonString DB '     DIVISAO             RAIZ QUADRADA$'
 paramX DW ?
 paramY DW ?
 comprimentoLim DW ?
@@ -40,20 +39,19 @@ welcomeWindow proc
     ret 
 endp 
 
+;texto dentro dos botoes
 insideSquareText proc 
     call CH_NEXTLINE 
     call CH_NEXTLINE
     call CH_NEXTLINE
     call CH_NEXTLINE
     call CH_NEXTLINE
-    mov dx, offset divisaoString
-    mov ah, 09h
-    int 21h 
-    mov dx, offset raizString
+    mov dx, offset buttonString
     mov ah, 09h
     int 21h 
 endp
 
+;escrever na proxima linha
 CH_NEXTLINE PROC   
     MOV DL, 0AH
     MOV AH, 02H
@@ -209,8 +207,7 @@ recebeMouseKeyboardInput proc
     ;verifica as coordenadas X para ver se está dentro do botão esquerdo
     CMP CX, 028H
     JL checkRightButton
-    
-    
+        
     CMP CX, 0F0H
     JG checkRightButton
     
@@ -276,6 +273,6 @@ MAIN PROC FAR
     ;começa o modo gráfico
     MOV AH, 00H ; Set video mode
     MOV AL, 13H ; Mode 13h
-    INT 10H
+    INT 10H 
 ENDP
 END MAIN
