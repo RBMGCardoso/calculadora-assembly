@@ -1,0 +1,595 @@
+EMU8086 GENERATED LISTING. MACHINE CODE <- SOURCE.
+ 
+QUADRADO.exe -- emu8086 assembler version: 4.08  
+ 
+[ 12/22/2022  --  6:11:30 PM ] 
+ 
+===================================================================================================
+[LINE]     LOC: MACHINE CODE                          SOURCE
+===================================================================================================
+ 
+[   1]        :                                       .DATA
+[   2]        :                                       ; Welcome screen variables
+[   3]    0000: 00 00                                 input DW 0
+[   4]    0002: 20 20 20 20 20 20 20 20 20 20 20 20   welcomeString DB '               ALGORITMOS$'
+                20 20 20 41 4C 47 4F 52 49 54 4D 4F 
+                53 24                               
+[   5]    001C: 20 20 20 20 20 20 20 20 20 20 20 50   startString DB '           PRESSIONE UM BOTAO$'
+                52 45 53 53 49 4F 4E 45 20 55 4D 20 
+                42 4F 54 41 4F 24                   
+[   6]    003A: 20 20 20 20 20 44 49 56 49 53 41 4F   buttonString DB '     DIVISAO             RAIZ QUADRADA$'
+                20 20 20 20 20 20 20 20 20 20 20 20 
+                20 52 41 49 5A 20 51 55 41 44 52 41 
+                44 41 24                            
+[   7]    0061: 00 00                                 paramX DW ?
+[   8]    0063: 00 00                                 paramY DW ?
+[   9]    0065: 00 00                                 comprimentoLim DW ?
+[  10]    0067: 00 00                                 larguraLim DW ?
+[  11]        :                                       
+[  12]        :                                       ; Input screen
+[  13]    0069: 23 00                                 width DW 35
+[  14]    006B: 23 00                                 height DW 35
+[  15]    006D: 00 00                                 limHeight DW ?
+[  16]    006F: 00 00                                 limWidth DW ?
+[  17]    0071: 14 00                                 x DW 20
+[  18]    0073: 64 00                                 y DW 100
+[  19]    0075: 00                                    verticalDrawn DB 0h
+[  20]    0076: 00                                    horizontalDrawn DB 0h
+[  21]    0077: 00                                    drawnSquares DB 0h
+[  22]    0078: 30                                    currentAscii DB 48
+[  23]    0079: 44 69 76 69 73 6F 72 3A 20 24         msgDivisor DB 'Divisor: $'
+[  24]    0083: 44 49 76 69 64 65 6E 64 6F 3A 20 24   msgDividendo DB 'DIvidendo: $'
+                                                    
+[  25]    008F: 52 65 73 75 6C 74 61 64 6F 3A 20 24   msgResultado DB 'Resultado: $'
+                                                    
+[  26]        :                                       
+[  27]        :                                       .CODE
+[  28]    00A0:                                       WELCOMEWINDOW proc
+[  29]        :                                       ;alinha a welcomeString no sitio pretendido
+[  30]    00A0: B9 07 00                              MOV CX, 7
+[  31]    00A3: E8 F9 02                              CALL NEWLINE
+[  32]        :                                       
+[  33]        :                                       ;mostra welcomeString
+[  34]    00A6: BA 02 00                              mov dx, offset welcomeString
+[  35]    00A9: B4 09                                 mov ah, 09h
+[  36]    00AB: CD 21                                 int 21h
+[  37]        :                                       
+[  38]    00AD: B9 02 00                              MOV CX, 2
+[  39]    00B0: E8 EC 02                              call NEWLINE
+[  40]        :                                       
+[  41]        :                                       ;mostra startString
+[  42]    00B3: BA 1C 00                              mov dx, offset startString
+[  43]    00B6: B4 09                                 mov ah, 09h
+[  44]    00B8: CD 21                                 int 21h
+[  45]    00BA: C3                                    ret
+[  46]        :                                       ENDP
+[  47]        :                                       
+[  48]    00BB:                                       INSIDESQUARETEXT PROC
+[  49]    00BB: B9 05 00                              MOV CX, 5
+[  50]    00BE: E8 DE 02                              call NEWLINE
+[  51]    00C1: BA 3A 00                              mov dx, offset buttonString
+[  52]    00C4: B4 09                                 mov ah, 09h
+[  53]    00C6: CD 21                                 int 21h
+[  54]    00C8: C3                                    RET
+[  55]        :                                       ENDP
+[  56]        :                                       
+[  57]    00C9:                                       verticalLines proc
+[  58]    00C9:                                       writeVertical:
+[  59]    00C9: B4 0C                                 mov ah,0ch
+[  60]    00CB: B0 0F                                 mov al, 0fh ;color
+[  61]    00CD: 8B 0E 71 00                           mov cx, x ; x co-ordinate
+[  62]    00D1: 8B 16 73 00                           mov dx, y ; y co-ordinate
+[  63]    00D5: B7 01                                 mov bh,1    ; page no - critical while animating
+[  64]    00D7: FF 06 73 00                           INC y
+[  65]    00DB: CD 10                                 int 10h
+[  66]    00DD: A1 67 00                              MOV AX, larguraLim
+[  67]    00E0: 39 06 73 00                           CMP y, AX
+[  68]    00E4: 76 E3                                 JBE writeVertical
+[  69]        :                                       
+[  70]    00E6: A1 61 00                              MOV AX, paramX
+[  71]    00E9: 8B 1E 63 00                           MOV BX, paramY
+[  72]        :                                       
+[  73]    00ED: A3 71 00                              MOV x, AX
+[  74]    00F0: 89 1E 73 00                           MOV y, BX
+[  75]        :                                       
+[  76]    00F4:                                       writeVertical2:
+[  77]    00F4: B4 0C                                 mov ah,0ch;
+[  78]    00F6: B0 0F                                 mov al, 0fh ;color
+[  79]    00F8: 8B 0E 71 00                           mov cx, x ; x co-ordinate
+[  80]    00FC: 8B 16 73 00                           mov dx, y ; y co-ordinate
+[  81]    0100: B7 01                                 mov bh,1    ; page no - critical while animating
+[  82]    0102: FF 06 73 00                           INC y
+[  83]    0106: CD 10                                 int 10h
+[  84]    0108: A1 67 00                              MOV AX, larguraLim
+[  85]    010B: 39 06 73 00                           CMP y, AX
+[  86]    010F: 76 E3                                 JBE writeVertical2
+[  87]    0111: C3                                    ret
+[  88]        :                                       endp
+[  89]        :                                       
+[  90]    0112:                                       horizontalLines proc
+[  91]    0112:                                       writeHorizontal:
+[  92]    0112: B4 0C                                 mov ah,0ch;
+[  93]    0114: B0 0F                                 mov al, 0fh ;color
+[  94]    0116: 8B 0E 71 00                           mov cx, x ; x co-ordinate
+[  95]    011A: 8B 16 73 00                           mov dx, y ; y co-ordinate
+[  96]    011E: B7 01                                 mov bh,1    ; page no - critical while animating
+[  97]    0120: FF 06 71 00                           INC x
+[  98]    0124: CD 10                                 int 10h
+[  99]    0126: A1 65 00                              MOV AX, comprimentoLim
+[ 100]    0129: 39 06 71 00                           CMP x, AX
+[ 101]    012D: 76 E3                                 JBE writeHorizontal
+[ 102]        :                                       
+[ 103]    012F: A1 61 00                              MOV AX, paramX
+[ 104]    0132: 8B 1E 63 00                           MOV BX, paramY
+[ 105]        :                                       
+[ 106]    0136: A3 71 00                              MOV x, AX
+[ 107]    0139: 89 1E 73 00                           MOV y, BX
+[ 108]        :                                       
+[ 109]    013D:                                       writeHorizontal2:
+[ 110]    013D: B4 0C                                 mov ah,0ch;
+[ 111]    013F: B0 0F                                 mov al, 0fh ;color
+[ 112]    0141: 8B 0E 71 00                           mov cx, x ; x co-ordinate
+[ 113]    0145: 8B 16 73 00                           mov dx, y ; y co-ordinate
+[ 114]    0149: B7 01                                 mov bh,1    ; page no - critical while animating
+[ 115]    014B: FF 06 71 00                           INC x
+[ 116]    014F: CD 10                                 int 10h
+[ 117]    0151: A1 65 00                              MOV AX, comprimentoLim
+[ 118]    0154: 39 06 71 00                           CMP x, AX
+[ 119]    0158: 76 E3                                 JBE writeHorizontal2
+[ 120]    015A: C3                                    ret
+[ 121]        :                                       endp
+[ 122]        :                                       
+[ 123]        :                                       ;desenha o quadrado
+[ 124]    015B:                                       desenhaQuadrados proc
+[ 125]        :                                       ;desenha botao da divisao
+[ 126]    015B: C7 06 61 00 78 00                     MOV paramX,120
+[ 127]    0161: C7 06 63 00 64 00                     MOV paramY,100
+[ 128]    0167: C7 06 67 00 87 00                     MOV larguraLim,135
+[ 129]    016D: C7 06 65 00 78 00                     MOV comprimentoLim,120
+[ 130]    0173: E8 53 FF                              CALL verticalLines
+[ 131]        :                                       
+[ 132]    0176: C7 06 71 00 14 00                     MOV x, 20
+[ 133]    017C: C7 06 73 00 64 00                     MOV y, 100
+[ 134]    0182: C7 06 61 00 14 00                     MOV paramX,20
+[ 135]    0188: C7 06 63 00 87 00                     MOV paramY,135
+[ 136]    018E: E8 81 FF                              CALL horizontalLines
+[ 137]        :                                       
+[ 138]        :                                       ;desenha botao da raiz quadrada
+[ 139]    0191: C7 06 71 00 BE 00                     mov x, 190
+[ 140]    0197: C7 06 73 00 64 00                     mov y, 100
+[ 141]    019D: C7 06 61 00 36 01                     MOV paramX,310
+[ 142]    01A3: C7 06 63 00 64 00                     MOV paramY,100
+[ 143]    01A9: C7 06 67 00 87 00                     MOV larguraLim,135
+[ 144]    01AF: C7 06 65 00 36 01                     MOV comprimentoLim,310
+[ 145]    01B5: E8 11 FF                              CALL verticalLines
+[ 146]        :                                       
+[ 147]    01B8: C7 06 71 00 BE 00                     MOV x, 190
+[ 148]    01BE: C7 06 73 00 64 00                     MOV y, 100
+[ 149]    01C4: C7 06 61 00 BE 00                     MOV paramX,190
+[ 150]    01CA: C7 06 63 00 87 00                     MOV paramY,135
+[ 151]    01D0: E8 3F FF                              CALL horizontalLines
+[ 152]        :                                       
+[ 153]    01D3: C3                                    ret
+[ 154]        :                                       endp
+[ 155]        :                                       
+[ 156]    01D4:                                       recebeMouseKeyboardInput proc
+[ 157]        :                                       ;se o utilizador pressionar 1, permite escolher o algoritmo pelo teclado, se pressionar 2 , permite escolher o algoritmo pelo rato
+[ 158]    01D4:                                       choiceError:
+[ 159]    01D4: B4 00                                 mov ah,00h
+[ 160]    01D6: CD 16                                 int 16h
+[ 161]        :                                       
+[ 162]    01D8: 3C 31                                 CMP al,031H
+[ 163]    01DA: 74 06                                 JE keyboardInput
+[ 164]        :                                       
+[ 165]    01DC: 3C 32                                 CMP al,032H
+[ 166]    01DE: 74 15                                 JE mouseLoop
+[ 167]    01E0: 75 F2                                 JNE choiceError
+[ 168]        :                                       
+[ 169]    01E2:                                       keyboardInput:
+[ 170]    01E2: B4 00                                 mov ah,00h
+[ 171]    01E4: CD 16                                 int 16h
+[ 172]        :                                       
+[ 173]    01E6: 3C 31                                 CMP al, 031H
+[ 174]    01E8: 74 4B                                 JE confirmDivision
+[ 175]        :                                       
+[ 176]    01EA: 3C 32                                 CMP al, 032H
+[ 177]    01EC: 74 4E                                 JE confirmSqrt
+[ 178]    01EE: 75 F2                                 JNE keyBoardInput
+[ 179]        :                                       
+[ 180]        :                                       ;inicializa o rato
+[ 181]    01F0: B8 00 00                              MOV AX,00H
+[ 182]    01F3: CD 33                                 INT 33H
+[ 183]        :                                       
+[ 184]    01F5:                                       mouseLoop:
+[ 185]        :                                       ;mostra cursor
+[ 186]    01F5: B8 01 00                              MOV AX, 01H
+[ 187]    01F8: CD 33                                 INT 33H
+[ 188]        :                                       
+[ 189]        :                                       ;recebe a posicao do cursor
+[ 190]    01FA: B8 03 00                              MOV AX, 03H
+[ 191]    01FD: CD 33                                 INT 33H
+[ 192]        :                                       
+[ 193]        :                                       ;verifica se foi clicado no botao esquerdo do rato
+[ 194]    01FF: 83 FB 01                              CMP BX, 1
+[ 195]    0202: 75 F1                                 JNE mouseLoop
+[ 196]        :                                       
+[ 197]        :                                       ;verifica as coordenadas X para ver se está dentro do botão esquerdo
+[ 198]    0204: 83 F9 28                              CMP CX, 028H
+[ 199]    0207: 7C 13                                 JL checkRightButton
+[ 200]        :                                       
+[ 201]    0209: 81 F9 F0 00                           CMP CX, 0F0H
+[ 202]    020D: 7F 0D                                 JG checkRightButton
+[ 203]        :                                       
+[ 204]        :                                       
+[ 205]        :                                       ;verifica as coordenadas Y para ver se está dentro do botão esquerdo
+[ 206]    020F: 83 FA 64                              CMP DX, 064H
+[ 207]    0212: 7C 08                                 JL checkRightButton
+[ 208]        :                                       
+[ 209]    0214: 81 FA 86 00                           CMP DX, 086H
+[ 210]    0218: 7F 02                                 JG checkRightButton
+[ 211]        :                                       
+[ 212]    021A: EB 19                                 jmp confirmDivision
+[ 213]        :                                       
+[ 214]    021C:                                       checkRightButton:
+[ 215]        :                                       ;verifica as coordenadas X para ver se está dentro do botão
+[ 216]    021C: 81 F9 7E 01                           CMP CX, 017EH
+[ 217]    0220: 7C D3                                 JL mouseLoop
+[ 218]        :                                       
+[ 219]    0222: 81 F9 6A 02                           CMP CX, 026AH
+[ 220]    0226: 7F CD                                 JG mouseLoop
+[ 221]        :                                       
+[ 222]        :                                       ;verifica as coordenadas Y para ver se está dentro do botão esquerdo
+[ 223]    0228: 83 FA 64                              CMP DX, 064H
+[ 224]    022B: 7C C8                                 JL mouseLoop
+[ 225]        :                                       
+[ 226]    022D: 81 FA 86 00                           CMP DX, 086H
+[ 227]    0231: 7F C2                                 JG mouseLoop
+[ 228]    0233: EB 07                                 JMP confirmSqrt
+[ 229]        :                                       
+[ 230]        :                                       
+[ 231]    0235:                                       confirmDivision:
+[ 232]        :                                       ;se estiver input = 1
+[ 233]    0235: 83 06 00 00 01                        ADD input,1
+[ 234]    023A: EB 05                                 JMP fimProc
+[ 235]        :                                       
+[ 236]    023C:                                       confirmSqrt:
+[ 237]    023C: 83 06 00 00 02                        ADD input,2
+[ 238]        :                                       
+[ 239]    0241:                                       fimproc:
+[ 240]    0241: C3                                    ret
+[ 241]        :                                       endp
+[ 242]        :                                       
+[ 243]        :                                       ;mostra o ecra principal do programa
+[ 244]    0242:                                       showMainScreen proc
+[ 245]    0242: E8 5B FE                              CALL WELCOMEWINDOW
+[ 246]    0245: E8 73 FE                              CALL insideSquareText
+[ 247]    0248: E8 10 FF                              CALL desenhaQuadrados
+[ 248]    024B: E8 86 FF                              CALL recebeMouseKeyboardInput
+[ 249]        :                                       
+[ 250]    024E: 83 3E 00 00 01                        CMP input, 1
+[ 251]    0253: 74 07                                 JE jmpDivis
+[ 252]        :                                       
+[ 253]    0255: 83 3E 00 00 02                        CMP input, 2
+[ 254]    025A: 74 04                                 JE jmpRaiz
+[ 255]        :                                       
+[ 256]    025C:                                       jmpDivis:
+[ 257]    025C: E8 E8 01                              CALL INPUTSCREEN
+[ 258]    025F: C3                                    RET
+[ 259]        :                                       
+[ 260]    0260:                                       jmpRaiz:
+[ 261]    0260: E8 E4 01                              CALL INPUTSCREEN
+[ 262]    0263: C3                                    RET
+[ 263]        :                                       
+[ 264]    0264: C3                                    RET
+[ 265]        :                                       endp
+[ 266]        :                                       
+[ 267]    0265:                                       DESENHAQUADRADO PROC
+[ 268]    0265: A1 73 00                              MOV AX, y
+[ 269]    0268: 03 06 6B 00                           ADD AX, height
+[ 270]    026C: A3 6D 00                              MOV limHeight, AX
+[ 271]        :                                       
+[ 272]    026F:                                       drawVLine:              ; Inicia o desenho de uma linha vertical
+[ 273]    026F: B4 0C                                 mov ah, 0Ch             ; Modo da INT 10h para desenhar pixeis
+[ 274]    0271: B0 0F                                 mov al, 0fh             ; Cor a ser utilizada no desenho
+[ 275]    0273: B7 00                                 mov bh, 0               ; Página a ser utilizada no desenho
+[ 276]    0275: 8B 0E 71 00                           mov cx, X               ; Posição x do pixel
+[ 277]    0279: 8B 16 73 00                           mov dx, y               ; Posição y do pixel
+[ 278]    027D: CD 10                                 INT 10h                 ; Interrupção da BIOS
+[ 279]        :                                       
+[ 280]    027F: 83 06 73 00 01                        ADD y, 1                ; Aumenta a var Y de forma a descer um pixel
+[ 281]    0284: A1 73 00                              MOV AX, Y               ; Fix memory to memory
+[ 282]        :                                       
+[ 283]    0287: 3B 06 6D 00                           CMP AX, limHeight       ; Verifica se a variavel Y chegou á altura limite
+[ 284]    028B: 72 E2                                 JB drawVLine
+[ 285]        :                                       
+[ 286]    028D: 80 06 75 00 01                        ADD verticalDrawn, 1    ; Incrementa a flag verticalDrawn
+[ 287]    0292: A1 73 00                              MOV AX, y               ;
+[ 288]    0295: 2B 06 6B 00                           SUB AX, height          ;
+[ 289]    0299: A3 73 00                              MOV y, AX               ; Volta á posição y inicial
+[ 290]    029C: A1 71 00                              MOV AX, x               ; Adiciona a width do quadrado á variavel x
+[ 291]    029F: 03 06 69 00                           ADD AX, width
+[ 292]    02A3: A3 71 00                              MOV x, AX
+[ 293]    02A6: 80 3E 75 00 02                        CMP verticalDrawn,2     ; Desenha outra linha caso a primeira não tenha sido desenhada
+[ 294]    02AB: 75 C2                                 JNE drawVLine
+[ 295]        :                                       
+[ 296]    02AD: A1 71 00                              MOV AX, x
+[ 297]    02B0: 2B 06 69 00                           SUB AX, width           ; Reseta posição x removendo 2*Width para compensar a width adicionada na ultima execução de drawVLine
+[ 298]    02B4: 2B 06 69 00                           SUB AX, width
+[ 299]    02B8: A3 71 00                              MOV x, AX
+[ 300]        :                                       
+[ 301]    02BB: A1 71 00                              MOV AX, x
+[ 302]    02BE: 03 06 69 00                           ADD AX, width           ; Adiciona width á posição atual de x de forma a obter a nova largura limite
+[ 303]    02C2: A3 6F 00                              MOV limWidth, AX
+[ 304]        :                                       
+[ 305]    02C5:                                       drawHLine:
+[ 306]    02C5: B4 0C                                 mov ah, 0Ch
+[ 307]    02C7: B0 0F                                 mov al, 0fh
+[ 308]    02C9: B7 00                                 mov bh, 0
+[ 309]    02CB: 8B 0E 71 00                           mov cx, X
+[ 310]    02CF: 8B 16 73 00                           mov dx, y
+[ 311]    02D3: CD 10                                 INT 10h
+[ 312]        :                                       
+[ 313]    02D5: 83 06 71 00 01                        ADD x, 1
+[ 314]    02DA: A1 71 00                              MOV AX, x
+[ 315]    02DD: 3B 06 6F 00                           CMP AX, limWidth
+[ 316]    02E1: 72 E2                                 JB drawHLine
+[ 317]        :                                       
+[ 318]    02E3: 80 06 76 00 01                        ADD horizontalDrawn, 1
+[ 319]    02E8: A1 71 00                              MOV AX, x
+[ 320]    02EB: 2B 06 69 00                           SUB AX, width
+[ 321]    02EF: A3 71 00                              MOV x, AX
+[ 322]    02F2: A1 73 00                              MOV AX, y
+[ 323]    02F5: 03 06 6B 00                           ADD AX, height
+[ 324]    02F9: A3 73 00                              MOV y, AX
+[ 325]        :                                       
+[ 326]    02FC: 80 3E 76 00 02                        CMP horizontalDrawn,2
+[ 327]    0301: 75 C2                                 JNE drawHLine
+[ 328]        :                                       
+[ 329]    0303: A1 73 00                              MOV AX, y
+[ 330]    0306: 2B 06 6B 00                           SUB AX, height
+[ 331]    030A: 2B 06 6B 00                           SUB AX, height
+[ 332]    030E: A3 73 00                              MOV y, AX
+[ 333]    0311: C3                                    RET
+[ 334]        :                                       ENDP
+[ 335]        :                                       
+[ 336]        :                                       
+[ 337]        :                                       
+[ 338]    0312:                                       PRINTINPUTSCREEN PROC
+[ 339]    0312:                                       drawTopSquares:         ; Desenha os 7 quadrados de cima (0-9 ; "," ; backspace)
+[ 340]    0312: C6 06 76 00 00                        MOV horizontalDrawn, 0h ; Reset das flags de contagem de linhas
+[ 341]    0317: C6 06 75 00 00                        MOV verticalDrawn, 0h   ; Reset das flags de contagem de linhas
+[ 342]        :                                       
+[ 343]    031C: E8 46 FF                              CALL DESENHAQUADRADO    ; Desenha um quadrado tendo as vars X,Y como ponto top-right e height, width como altura e largura
+[ 344]    031F: A1 71 00                              MOV AX, x
+[ 345]    0322: 03 06 69 00                           ADD AX, width
+[ 346]    0326: 05 09 00                              ADD AX, 9               ; Margem entre quadrados
+[ 347]    0329: A3 71 00                              MOV x, AX
+[ 348]    032C: FE 06 77 00                           INC drawnSquares    ; Incrementa drawnSquares de modo a contar quandos quadrados foram desenhados
+[ 349]    0330: 80 3E 77 00 07                        CMP drawnSquares, 7
+[ 350]    0335: 7C DB                                 JL drawTopSquares
+[ 351]        :                                       
+[ 352]    0337: C6 06 77 00 00                        MOV drawnSquares, 0
+[ 353]    033C: C7 06 73 00 0A 00                     MOV Y, 10
+[ 354]    0342: C7 06 71 00 0A 00                     MOV X, 10
+[ 355]        :                                       
+[ 356]    0348: A1 73 00                              MOV AX, Y
+[ 357]    034B: 03 06 6B 00                           ADD AX, height
+[ 358]    034F: 05 09 00                              ADD AX, 9
+[ 359]    0352: A3 73 00                              MOV Y, AX
+[ 360]        :                                       
+[ 361]    0355:                                       drawBottomSquares:
+[ 362]    0355: C6 06 76 00 00                        MOV horizontalDrawn, 0h ; Reset das flags de contagem de linhas
+[ 363]    035A: C6 06 75 00 00                        MOV verticalDrawn, 0h   ; Reset das flags de contagem de linhas
+[ 364]        :                                       
+[ 365]    035F: E8 03 FF                              CALL DESENHAQUADRADO    ; Desenha um quadrado tendo as vars X,Y como ponto top-right e height, width como altura e largura
+[ 366]    0362: A1 71 00                              MOV AX, x
+[ 367]    0365: 03 06 69 00                           ADD AX, width
+[ 368]    0369: 05 09 00                              ADD AX, 9               ; Margem entre quadrados
+[ 369]    036C: A3 71 00                              MOV x, AX
+[ 370]    036F: FE 06 77 00                           INC drawnSquares    ; Incrementa drawnSquares de modo a contar quandos quadrados foram desenhados
+[ 371]        :                                       
+[ 372]    0373: 80 3E 77 00 05                        CMP drawnSquares, 5
+[ 373]    0378: 7C DB                                 JL drawBottomSquares
+[ 374]    037A: A1 69 00                              MOV AX, width
+[ 375]    037D: BB 02 00                              MOV BX, 2
+[ 376]    0380: F7 E3                                 MUL BX
+[ 377]    0382: 05 09 00                              ADD AX, 9
+[ 378]    0385: A3 69 00                              MOV width, AX
+[ 379]    0388: 80 3E 77 00 06                        CMP drawnSquares, 6
+[ 380]    038D: 7C C6                                 JL drawBottomSquares
+[ 381]    038F: C3                                    RET
+[ 382]        :                                       ENDP
+[ 383]        :                                       
+[ 384]    0390:                                       ESPACOS PROC
+[ 385]    0390: B4 02                                 MOV AH, 2
+[ 386]    0392: BB 00 00                              MOV BX, 0
+[ 387]    0395:                                       espaço:
+[ 388]    0395: B2 20                                 MOV DL, ' '
+[ 389]    0397: CD 21                                 INT 21H
+[ 390]    0399: 43                                    INC BX
+[ 391]    039A: 3B D9                                 CMP BX, CX
+[ 392]    039C: 7C F7                                 JL espaço
+[ 393]    039E: C3                                    RET
+[ 394]        :                                       ENDP
+[ 395]        :                                       
+[ 396]    039F:                                       NEWLINE PROC
+[ 397]    039F: BB 00 00                              MOV BX, 0
+[ 398]    03A2:                                       newLineLoop:
+[ 399]    03A2: B4 02                                 MOV AH, 2
+[ 400]    03A4: B2 0A                                 MOV DL, 10
+[ 401]    03A6: CD 21                                 INT 21H
+[ 402]    03A8: B2 0D                                 MOV DL, 13
+[ 403]    03AA: CD 21                                 INT 21H
+[ 404]    03AC: 43                                    INC BX
+[ 405]    03AD: 3B D9                                 CMP BX, CX
+[ 406]    03AF: 7C F1                                 JL newLineLoop
+[ 407]    03B1: C3                                    RET
+[ 408]        :                                       ENDP
+[ 409]        :                                       
+[ 410]    03B2:                                       DRAWNUMBERS PROC
+[ 411]    03B2: B9 03 00                              MOV CX, 3       ; CX representa o número de linhas a adicionar
+[ 412]    03B5: E8 E7 FF                              CALL NEWLINE
+[ 413]        :                                       
+[ 414]    03B8:                                       drawTopNumbers:
+[ 415]    03B8: B9 04 00                              MOV CX, 4       ; CX representa o número de espaços a adicionar
+[ 416]    03BB: E8 D2 FF                              CALL ESPACOS
+[ 417]    03BE: 8A 16 78 00                           MOV DL, currentAscii
+[ 418]    03C2: FE 06 78 00                           INC currentAscii
+[ 419]    03C6: CD 21                                 INT 21H
+[ 420]    03C8: 80 3E 78 00 34                        CMP currentAscii, 52
+[ 421]    03CD: 7E E9                                 JLE drawTopNumbers
+[ 422]        :                                       
+[ 423]    03CF: B9 05 00                              MOV CX, 5       ; CX representa o número de espaços a adicionar
+[ 424]    03D2: E8 BB FF                              CALL ESPACOS
+[ 425]    03D5: B2 2D                                 MOV DL, 45
+[ 426]    03D7: CD 21                                 INT 21H
+[ 427]        :                                       
+[ 428]    03D9: B9 05 00                              MOV CX, 5       ; CX representa o número de espaços a adicionar
+[ 429]    03DC: E8 B1 FF                              CALL ESPACOS
+[ 430]    03DF: B2 AE                                 MOV DL, 174
+[ 431]    03E1: CD 21                                 INT 21H
+[ 432]        :                                       
+[ 433]    03E3: B9 05 00                              MOV CX, 5       ; CX representa o número de linhas a adicionar
+[ 434]    03E6: E8 B6 FF                              CALL NEWLINE
+[ 435]        :                                       
+[ 436]    03E9:                                       drawBotNumbers:
+[ 437]    03E9: B9 04 00                              MOV CX, 4
+[ 438]    03EC: E8 A1 FF                              CALL ESPACOS
+[ 439]    03EF: 8A 16 78 00                           MOV DL, currentAscii
+[ 440]    03F3: FE 06 78 00                           INC currentAscii
+[ 441]    03F7: CD 21                                 INT 21H
+[ 442]    03F9: 80 3E 78 00 39                        CMP currentAscii, 57
+[ 443]    03FE: 7E E9                                 JLE drawBotNumbers
+[ 444]        :                                       
+[ 445]    0400: B9 05 00                              MOV CX, 5
+[ 446]    0403: E8 8A FF                              CALL ESPACOS
+[ 447]    0406: B2 3D                                 MOV DL, 61
+[ 448]    0408: CD 21                                 INT 21H
+[ 449]    040A: C3                                    RET
+[ 450]        :                                       ENDP
+[ 451]        :                                       
+[ 452]    040B:                                       DRAWDIVISOR PROC
+[ 453]    040B: B9 04 00                              MOV CX, 4
+[ 454]    040E: E8 7F FF                              CALL ESPACOS
+[ 455]        :                                       
+[ 456]    0411: B9 06 00                              MOV CX, 6
+[ 457]    0414: E8 88 FF                              CALL NEWLINE
+[ 458]        :                                       
+[ 459]    0417: B4 09                                 MOV AH, 9
+[ 460]    0419: BA 79 00                              MOV DX, OFFSET msgDivisor
+[ 461]    041C: CD 21                                 INT 21H
+[ 462]        :                                       
+[ 463]    041E: C3                                    RET
+[ 464]        :                                       ENDP
+[ 465]        :                                       
+[ 466]    041F:                                       DRAWDIVIDENDO PROC
+[ 467]    041F: B9 04 00                              MOV CX, 4
+[ 468]    0422: E8 6B FF                              CALL ESPACOS
+[ 469]        :                                       
+[ 470]    0425: B9 02 00                              MOV CX, 2
+[ 471]    0428: E8 74 FF                              CALL NEWLINE
+[ 472]        :                                       
+[ 473]    042B: B4 09                                 MOV AH, 9
+[ 474]    042D: BA 83 00                              MOV DX, OFFSET msgDividendo
+[ 475]    0430: CD 21                                 INT 21H
+[ 476]        :                                       
+[ 477]    0432: C3                                    RET
+[ 478]        :                                       ENDP
+[ 479]        :                                       
+[ 480]    0433:                                       DRAWRESULTADO PROC
+[ 481]    0433: B9 04 00                              MOV CX, 4
+[ 482]    0436: E8 57 FF                              CALL ESPACOS
+[ 483]        :                                       
+[ 484]    0439: B9 03 00                              MOV CX, 3
+[ 485]    043C: E8 60 FF                              CALL NEWLINE
+[ 486]        :                                       
+[ 487]    043F: B4 09                                 MOV AH, 9
+[ 488]    0441: BA 8F 00                              MOV DX, OFFSET msgResultado
+[ 489]    0444: CD 21                                 INT 21H
+[ 490]        :                                       
+[ 491]    0446: C3                                    RET
+[ 492]        :                                       ENDP
+[ 493]        :                                       
+[ 494]    0447:                                       INPUTSCREEN PROC
+[ 495]    0447: B4 00                                 mov ah, 0               ; Inicialização do modo gráfico
+[ 496]    0449: B0 13                                 mov al, 13h
+[ 497]    044B: CD 10                                 int 10h
+[ 498]        :                                       
+[ 499]    044D: B8 00 00                              MOV AX, 0
+[ 500]    0450: BB 00 00                              MOV BX, 0
+[ 501]    0453: B9 00 00                              MOV CX, 0
+[ 502]    0456: BA 00 00                              MOV DX, 0
+[ 503]        :                                       
+[ 504]    0459: C7 06 69 00 23 00                     MOV width, 35
+[ 505]    045F: C7 06 6B 00 23 00                     MOV height, 35
+[ 506]    0465: C7 06 71 00 0A 00                     MOV x, 10
+[ 507]    046B: C7 06 73 00 0A 00                     MOV y, 10
+[ 508]        :                                       
+[ 509]    0471: E8 3E FF                              CALL DRAWNUMBERS
+[ 510]    0474: E8 9B FE                              CALL PRINTINPUTSCREEN
+[ 511]    0477: E8 91 FF                              CALL DRAWDIVISOR
+[ 512]        :                                       
+[ 513]    047A: E8 A2 FF                              CALL DRAWDIVIDENDO
+[ 514]    047D: E8 B3 FF                              CALL DRAWRESULTADO
+[ 515]    0480: C3                                    RET
+[ 516]        :                                       ENDP
+[ 517]        :                                       
+[ 518]    0481:                                       MAIN PROC
+[ 519]    0481: BA 00 00                              MOV DX, @DATA           ; Variaveis
+[ 520]    0484: 8E DA                                 MOV DS, DX
+[ 521]        :                                       
+[ 522]    0486: B4 00                                 mov ah, 0               ; Inicialização do modo gráfico
+[ 523]    0488: B0 13                                 mov al, 13h
+[ 524]    048A: CD 10                                 int 10h
+[ 525]        :                                       
+[ 526]    048C: E8 B3 FD                              CALL showMainScreen
+[ 527]        :                                       ENDP
+[ 528]        :                                       END MAIN
+[ 529]        :                                       
+[ 530]        :                                       
+[ 531]        :                                       
+ 
+===================================================================================================
+ 
+EXE HEADER - bytes from 0000 to 01FF inclusive.
+
+0000: 4D      -   exe signature (M)
+0001: 5A      -   exe signature (Z)
+0002: 8F      -   bytes on last page (l.byte)
+0003: 00      -   bytes on last page (h.byte)
+0004: 04      -   512 byte pages in file (l.byte)
+0005: 00      -   512 byte pages in file (h.byte)
+0006: 01      -   relocations (l.byte)
+0007: 00      -   relocations (h.byte)
+0008: 20      -   paragraphs in header (l.byte)
+0009: 00      -   paragraphs in header (h.byte)
+000A: 00      -   minimum memory (l.byte)
+000B: 00      -   minimum memory (h.byte)
+000C: FF      -   maximum memory (l.byte)
+000D: FF      -   maximum memory (h.byte)
+000E: 00      -   SS - stack segment (l.byte)
+000F: 00      -   SS - stack segment (h.byte)
+0010: 00      -   SP - stack pointer (l.byte)
+0011: 00      -   SP - stack pointer (h.byte)
+0012: A0      -   check sum (l.byte)
+0013: 58      -   check sum (h.byte)
+0014: E1      -   IP - instruction pointer (l.byte)
+0015: 03      -   IP - instruction pointer (h.byte)
+0016: 0A      -   CS - code segment (l.byte)
+0017: 00      -   CS - code segment (h.byte)
+0018: 1E      -   relocation table adress (l.byte)
+0019: 00      -   relocation table adress (h.byte)
+001A: 00      -   overlay number (l.byte)
+001B: 00      -   overlay number (h.byte)
+001C: 01      -   signature (l.byte)
+001D: 00      -   signature (h.byte)
+001E: E2      -   relocation table - offset inside segment (l.byte)
+001F: 03      -   relocation table - offset inside segment (h.byte)
+0020: 0A      -   relocation table - segment anchor (l.byte)
+0021: 00      -   relocation table - segment anchor (h.byte)
+0022 to 01FF  -   reserved relocation area  (00) 
+
+
+
+
+===================================================================================================

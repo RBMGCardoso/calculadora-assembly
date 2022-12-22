@@ -1,0 +1,69 @@
+< THE SYMBOL TABLE >  QUADRADO.exe  --  emu8086 assembler version: 4.08 
+===================================================================================================
+Name                     	Offset    	Size      	Type      	Segment   
+===================================================================================================
+DATA                     	00000     	-5        	SEGMENT   	(ITSELF)  
+INPUT                    	00000     	2         	VAR       	data      
+WELCOMESTRING            	00002     	1         	VAR       	data      
+STARTSTRING              	0001C     	1         	VAR       	data      
+BUTTONSTRING             	0003A     	1         	VAR       	data      
+PARAMX                   	00061     	2         	VAR       	data      
+PARAMY                   	00063     	2         	VAR       	data      
+COMPRIMENTOLIM           	00065     	2         	VAR       	data      
+LARGURALIM               	00067     	2         	VAR       	data      
+WIDTH                    	00069     	2         	VAR       	data      
+HEIGHT                   	0006B     	2         	VAR       	data      
+LIMHEIGHT                	0006D     	2         	VAR       	data      
+LIMWIDTH                 	0006F     	2         	VAR       	data      
+X                        	00071     	2         	VAR       	data      
+Y                        	00073     	2         	VAR       	data      
+VERTICALDRAWN            	00075     	1         	VAR       	data      
+HORIZONTALDRAWN          	00076     	1         	VAR       	data      
+DRAWNSQUARES             	00077     	1         	VAR       	data      
+CURRENTASCII             	00078     	1         	VAR       	data      
+MSGDIVISOR               	00079     	1         	VAR       	data      
+MSGDIVIDENDO             	00083     	1         	VAR       	data      
+MSGRESULTADO             	0008F     	1         	VAR       	data      
+CODE                     	0000A     	-5        	SEGMENT   	(ITSELF)  
+WELCOMEWINDOW            	00000     	-1        	NEAR      	code      
+INSIDESQUARETEXT         	0001B     	-1        	NEAR      	code      
+VERTICALLINES            	00029     	-1        	NEAR      	code      
+WRITEVERTICAL            	00029     	-1        	LABEL     	code      
+WRITEVERTICAL2           	00054     	-1        	LABEL     	code      
+HORIZONTALLINES          	00072     	-1        	NEAR      	code      
+WRITEHORIZONTAL          	00072     	-1        	LABEL     	code      
+WRITEHORIZONTAL2         	0009D     	-1        	LABEL     	code      
+DESENHAQUADRADOS         	000BB     	-1        	NEAR      	code      
+RECEBEMOUSEKEYBOARDINPUT 	00134     	-1        	NEAR      	code      
+CHOICEERROR              	00134     	-1        	LABEL     	code      
+KEYBOARDINPUT            	00142     	-1        	LABEL     	code      
+MOUSELOOP                	00155     	-1        	LABEL     	code      
+CHECKRIGHTBUTTON         	0017C     	-1        	LABEL     	code      
+CONFIRMDIVISION          	00195     	-1        	LABEL     	code      
+CONFIRMSQRT              	0019C     	-1        	LABEL     	code      
+FIMPROC                  	001A1     	-1        	LABEL     	code      
+SHOWMAINSCREEN           	001A2     	-1        	NEAR      	code      
+JMPDIVIS                 	001BC     	-1        	LABEL     	code      
+JMPRAIZ                  	001C0     	-1        	LABEL     	code      
+DESENHAQUADRADO          	001C5     	-1        	NEAR      	code      
+DRAWVLINE                	001CF     	-1        	LABEL     	code      
+DRAWHLINE                	00225     	-1        	LABEL     	code      
+PRINTINPUTSCREEN         	00272     	-1        	NEAR      	code      
+DRAWTOPSQUARES           	00272     	-1        	LABEL     	code      
+DRAWBOTTOMSQUARES        	002B5     	-1        	LABEL     	code      
+ESPACOS                  	002F0     	-1        	NEAR      	code      
+ESPAÇO                   	002F5     	-1        	LABEL     	code      
+NEWLINE                  	002FF     	-1        	NEAR      	code      
+NEWLINELOOP              	00302     	-1        	LABEL     	code      
+DRAWNUMBERS              	00312     	-1        	NEAR      	code      
+DRAWTOPNUMBERS           	00318     	-1        	LABEL     	code      
+DRAWBOTNUMBERS           	00349     	-1        	LABEL     	code      
+DRAWDIVISOR              	0036B     	-1        	NEAR      	code      
+DRAWDIVIDENDO            	0037F     	-1        	NEAR      	code      
+DRAWRESULTADO            	00393     	-1        	NEAR      	code      
+INPUTSCREEN              	003A7     	-1        	NEAR      	code      
+MAIN                     	003E1     	-1        	NEAR      	code      
+===================================================================================================
+[ 12/22/2022  --  6:11:30 PM ] 
+< END >
+ 
