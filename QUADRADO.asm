@@ -243,8 +243,8 @@ endp
 ;mostra o ecra principal do programa
 showMainScreen proc
     CALL WELCOMEWINDOW
-    CALL desenhaQuadrados    
     CALL insideSquareText   
+    CALL desenhaQuadrados    
     CALL recebeMouseKeyboardInput
     
     CMP input, 1
