@@ -1,0 +1,30 @@
+\documentclass{report}
+\usepackage[portuguese]{babel}
+\usepackage[T1]{fontenc}
+
+% Keywords command
+\providecommand{\keywords}[1]
+{
+	\small	
+	\textbf{\textit{Palavras-chave---}} #1
+}
+
+
+\title{Calculadora em Assembly x86\\
+	{\Large Escola Superior de Tecnologia de Tomar}\\
+	{\large Arquitetura de Computadores}}
+\date{Janeiro, 2022}
+\author{Rúben Cardoso \and Rodrigo Serra}
+
+\begin{document}
+	\maketitle
+	
+	\include{ch-resumo}
+	
+	\tableofcontents
+	
+	\include{ch-gui}
+	\include{ch-divis}
+	
+	
+\end{document}

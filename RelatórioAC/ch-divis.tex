@@ -1,0 +1,23 @@
+\chapter{Algoritmo da Divisão}
+
+\section{Objetivo}
+Este algoritmo pretende receber as variáveis, dividendo, e divisor (podendo estas ser negativas) e em seguida executar o algoritmo da divisão de forma a devolver o resultado da divisão, bem como, o resto da mesma.
+
+\section{Pseudocódigo}
+\begin{enumerate}
+	\item Inicialização das variáveis necessárias\footnote{Este pseudocódigo assume que as variáveis Divisor e Dividendo já foram obtidas através da interface gráfica}
+	\item Retirar o primeiro HighOrder do dividendo e atribuir o seu valor  á variável Resto
+	\item Iterar as vezes necessárias até a operação $i\footnote{A variável $i$ é utilizada como variável de iteração em ciclos}\times Divisor > Resto$
+	\item Após a condição ser satisfeita:
+	\begin{enumerate}
+		\item Utilizar o valor atual da variável $i$ caso, $i\times Divisor = Resto$
+		\item Realizar o cálculo $i = i - 1$,caso, $i\times Divisor > Resto$
+	\end{enumerate}
+	\item Concatenar o valor de $i$ á variável Quociente
+	\item Verificar se existem mais algarismos no dividendo
+	\begin{enumerate}
+		\item Caso existam, voltar ao passo 3. com o novo valor retirado do dividendo
+		\item Caso não existam, obter o valor do resultado a partir da expressão, \\$Resto = Resto - (i\times Divisor)$
+	\end{enumerate}
+\end{enumerate}
+
