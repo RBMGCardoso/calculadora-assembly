@@ -4,3 +4,6 @@
 \contentsline {chapter}{\numberline {2}Algoritmo da Divisão}{4}{}%
 \contentsline {section}{\numberline {2.1}Objetivo}{4}{}%
 \contentsline {section}{\numberline {2.2}Pseudocódigo}{4}{}%
+\contentsline {chapter}{\numberline {3}Algoritmo da Raiz Quadrada}{5}{}%
+\contentsline {section}{\numberline {3.1}Objetivo}{5}{}%
+\contentsline {section}{\numberline {3.2}Pseudocódigo}{5}{}%

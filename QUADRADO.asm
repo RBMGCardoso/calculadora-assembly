@@ -21,7 +21,8 @@ horizontalDrawn DB 0h
 drawnSquares DB 0h
 currentAscii DB 48
 msgDivisor DB 'Divisor: $'
-msgDividendo DB 'DIvidendo: $'
+msgDividendo DB 'Dividendo: $'   
+msgRadicando DB 'Radicando: $'
 msgResultado DB 'Resultado: $'
 
 .CODE
@@ -127,6 +128,8 @@ desenhaQuadrados proc
     MOV paramY,100
     MOV larguraLim,135
     MOV comprimentoLim,120
+    MOV x, 20
+    MOV y, 100
     CALL verticalLines
     
     MOV x, 20
@@ -255,11 +258,13 @@ showMainScreen proc
        
     jmpDivis:
     CALL INPUTSCREEN  
-    RET
+    JMP final
     
     jmpRaiz:
-    CALL INPUTSCREEN
-    RET    
+    CALL INPUTSCREEN    
+    JMP final
+     
+    final: 
      
 RET
 endp 
@@ -335,7 +340,7 @@ ENDP
 
    
 
-PRINTINPUTSCREEN PROC   
+PRINTINPUTSCREEN PROC       
     drawTopSquares:         ; Desenha os 7 quadrados de cima (0-9 ; "," ; backspace)
         MOV horizontalDrawn, 0h ; Reset das flags de contagem de linhas
         MOV verticalDrawn, 0h   ; Reset das flags de contagem de linhas
@@ -428,7 +433,7 @@ DRAWNUMBERS PROC
     MOV CX, 5       ; CX representa o número de espaços a adicionar
     CALL ESPACOS
     MOV DL, 174
-    INT 21H
+    INT 21H                                                                                                                       
     
     MOV CX, 5       ; CX representa o número de linhas a adicionar
     CALL NEWLINE
@@ -477,6 +482,20 @@ DRAWDIVIDENDO PROC
 RET
 ENDP
 
+DRAWRADICANDO PROC
+    MOV CX, 4
+    CALL ESPACOS
+
+    MOV CX, 6
+    CALL NEWLINE
+    
+    MOV AH, 9
+    MOV DX, OFFSET msgRadicando
+    INT 21H
+        
+RET
+ENDP
+
 DRAWRESULTADO PROC
     MOV CX, 4
     CALL ESPACOS
@@ -491,10 +510,39 @@ DRAWRESULTADO PROC
 RET
 ENDP
 
+KBHANDLER_INPUTSCREEN PROC
+    kbLoop:         ; Ativa a leitura do teclado
+    MOV AH, 00H
+    INT 16H
+    
+    ; Comparações do input dado com os valores permitidos  
+    CMP AX, 011BH       ; Verifica se foi clicado no Esc
+    JE goBack
+    
+    
+    
+    
+    ; Verificação entre os numeros 0-9
+    CMP AX, 0231H
+    JL kbLoop
+    
+    CMP AX, 0B30H
+    JG kbLoop
+    
+    JMP kbLoop
+    
+    goBack:
+        CALL CLEARSCREEN
+        CALL SOFTRESET
+        CALL showMainScreen
+    
+    acceptedInput:
+        
+RET
+ENDP
+
 INPUTSCREEN PROC
-    mov ah, 0               ; Inicialização do modo gráfico
-    mov al, 13h
-    int 10h
+    CALL CLEARSCREEN
     
     MOV AX, 0
     MOV BX, 0
@@ -508,20 +556,55 @@ INPUTSCREEN PROC
     
     CALL DRAWNUMBERS
     CALL PRINTINPUTSCREEN
-    CALL DRAWDIVISOR
     
-    CALL DRAWDIVIDENDO
-    CALL DRAWRESULTADO
+    CMP input, 1
+    JE inputDivisao 
+    
+    CMP input, 2
+    JE inputRaiz
+    
+    
+    inputDivisao:
+        CALL DRAWDIVISOR
+        CALL KBHANDLER_INPUTSCREEN
+        CALL DRAWDIVIDENDO
+        JMP resultado
+        
+    inputRaiz:
+        CALL DRAWRADICANDO
+        CALL KBHANDLER_INPUTSCREEN
+        JMP resultado
+    
+    resultado:
+        CALL DRAWRESULTADO       
 RET
 ENDP 
+    
+CLEARSCREEN PROC
+    mov ah, 0               ; Inicialização do modo gráfico
+    mov al, 13h
+    int 10h    
+RET
+ENDP
 
+SOFTRESET PROC
+    MOV verticalDrawn, 0
+    MOV horizontalDrawn, 0
+    MOV x, 10
+    MOV y, 10
+    MOV drawnSquares, 0
+    MOV currentAscii, 48
+    MOV width, 35
+    MOV height, 35  
+    MOV input, 0
+RET
+ENDP    
+    
 MAIN PROC  
     MOV DX, @DATA           ; Variaveis
     MOV DS, DX                             
     
-    mov ah, 0               ; Inicialização do modo gráfico
-    mov al, 13h
-    int 10h
+    CALL CLEARSCREEN
     
     CALL showMainScreen                           
 ENDP

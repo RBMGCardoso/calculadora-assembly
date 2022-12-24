@@ -1,0 +1,31 @@
+\chapter{Algoritmo da Raiz Quadrada}
+
+\section{Objetivo}
+Este algoritmo tem como objetivo receber o valor do Radicando e em seguida calcular a
+raiz quadrada do valor inserido, e devolver o seu resultado.
+
+\section{Pseudocódigo}
+\begin{enumerate}
+	\item Inicializar as variáveis necessárias\footnote{Este pseudocódigo assume que a variável Radicando já foi obtida através da interface gráfica}
+	\item Utilizar divisões consecutivas por 10 de forma a obter o número de dígitos do Radicando e armazenar o resultado em nAlgarismos
+	\item Obter o número de pares possíveis através da formula, $nGrupos = \frac{nAlgarismos}{2} $
+	\begin{enumerate}
+		\item Caso o resto da divisão do passo anterior seja igual a 1, realizar\\ $nGrupos = nGrupos + 1$
+	\end{enumerate}
+	\item Verificar o valor de nGrupos
+	\begin{enumerate}
+		\item Caso existam múltiplos grupos, ou seja $nGrupos > 1$, obter o grupo de HighOrder através da fórmula, $HighOrder = \frac{Radicando}{10^{(nGrupos)}}$
+		\item Caso exista um único grupo atribuir o valor do Radicando ao HighOrder
+	\end{enumerate}
+	\item Caso seja a primeira iteração, realizar $aux \times aux\footnote{Variável auxiliar inicializada a 0}$ de forma a encontrar o maior número possível que não ultrapasse o HighOrder e armazenar a variável valor da variável aux na variável Elevado
+	\item Caso não seja a primeira iteração, concatenar o novo HighOrder á variável aux
+	\begin{enumerate}
+		\item Caso seja a primeira iteração saltar para o passo 9.
+	\end{enumerate}
+	\item Calcular $(2\times Elevado:a)\times a$, incrementado o valor de $a$ enquanto o resultado não for superior a aux
+	\item Concatenar o valor de $a$ obtido no passo anterior á variável Elevado
+	\item Parar a execução do algoritmo caso $nGrupos = 1$ e armazenar o valor de Elevado na variável Resultado
+	\item Calcular $Aux = HighOrder - Elevado^{2}$ 
+	\item Calcular $Radicando = Radicando - (HighOrder\times 10^{nGrupos})$, de forma a remover o grupo mais á esquerda.
+	\item Saltar para o passo 4.
+\end{enumerate}
