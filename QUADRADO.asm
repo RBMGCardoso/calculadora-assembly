@@ -283,7 +283,7 @@ endp
 showMainScreen proc
     CALL WELCOMEWINDOW
     CALL insideSquareText   
-    CALL desenhaQuadrados    
+    ;CALL desenhaQuadrados    
     CALL recebeMouseKeyboardInput
     
     ; Deteta qual numero foi pressionado, e verifica se está dentro dos valores possiveis
@@ -554,7 +554,10 @@ KBHANDLER_INPUTSCREEN PROC
     JE finish:
     
     CMP AX, 0E08H ;backspace
-    JE backspace   
+    JE backspace
+    
+    CMP AL, 45 ; menos
+    JE makeNegativo    
     
     ; Verificação entre os numeros 0-9
     CMP AX, 0231H
@@ -570,6 +573,40 @@ KBHANDLER_INPUTSCREEN PROC
         CALL SOFTRESET
         CALL showMainScreen
     
+    makeNegativo:
+        CMP inputCounter, 1
+        JE dividNegativo
+    
+        CMP inputCounter, 2
+        JE divisNegativo
+        
+        JMP kbLoop
+        dividNegativo:
+            CMP dividCount, 0
+            JNE kbLoop 
+            CMP negativo, 1
+            JE kbLoop
+            INC negativo
+            
+            MOV DL, 45
+            MOV AH, 2H
+            INT 21H
+            
+            JMP kbLoop
+            
+        divisNegativo:
+            CMP divisCount, 0
+            JNE kbLoop 
+            CMP negativo, 2
+            JE kbLoop
+            INC negativo
+            
+            MOV DL, 45
+            MOV AH, 2H
+            INT 21H
+                            
+            JMP kbLoop    
+    
     acceptedInput:
         CMP input, 2
         JE raizInput
@@ -581,7 +618,7 @@ KBHANDLER_INPUTSCREEN PROC
             CMP inputCounter, 2
             JE divisInput
         
-            dividInput:               
+            dividInput:                          
                 MOV SI, dividCount
                 SUB AL, 48             
                 MOV dividArray[SI], AL
@@ -641,11 +678,16 @@ KBHANDLER_INPUTSCREEN PROC
         CMP inputCounter, 3
         JE decRaiz       
         
-        decDivid:
+        decDivid:           
             ; Verifica se é possivel remover mais algum digito
             CMP dividCount, 0
-            JE kbLoop
-        
+            JNE notNegativo
+            
+            CMP negativo, 1
+            JNE notNegativo
+            JE removeNegativo
+            
+            notNegativo:
             SUB dividCount, 1
             JMP removeChar
             
@@ -670,7 +712,11 @@ KBHANDLER_INPUTSCREEN PROC
             JE kbLoop        
         
             SUB radicandoCount, 1
+            JMP removeChar
         
+        
+        removeNegativo:
+        DEC negativo
         removeChar:
         ; Remove o ultimo caracter
         MOV AH, 2
@@ -821,7 +867,7 @@ INPUTSCREEN PROC
     MOV y, 10
     
     CALL DRAWNUMBERS
-    CALL PRINTINPUTSCREEN
+    ;CALL PRINTINPUTSCREEN
     
     CMP input, 1
     JE inputDivisao 
