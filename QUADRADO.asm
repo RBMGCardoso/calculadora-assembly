@@ -24,6 +24,17 @@ msgDivisor DB 'Divisor: $'
 msgDividendo DB 'Dividendo: $'   
 msgRadicando DB 'Radicando: $'
 msgResultado DB 'Resultado: $'
+inputCounter DW ? ; 1: Dividendo, 2: Divisor; 3: Radicando  
+                                           
+; Algoritmo da divisão
+dividArray DB ?
+divisArray DB ?
+dividCount DW 0
+divisCount DW 0
+
+; Algoritmo da divisão
+radicandoArray DB ?
+radicandoCount DW 0
 
 .CODE
 WELCOMEWINDOW proc
@@ -250,22 +261,16 @@ showMainScreen proc
     CALL desenhaQuadrados    
     CALL recebeMouseKeyboardInput
     
+    ; Deteta qual numero foi pressionado, e verifica se está dentro dos valores possiveis
     CMP input, 1
-    JE jmpDivis
+    JE execute
     
     CMP input, 2
-    JE jmpRaiz
-       
-    jmpDivis:
-    CALL INPUTSCREEN  
-    JMP final
+    JE execute
     
-    jmpRaiz:
-    CALL INPUTSCREEN    
-    JMP final
-     
-    final: 
-     
+    RET
+    execute:   
+    CALL INPUTSCREEN         
 RET
 endp 
         
@@ -454,6 +459,7 @@ DRAWNUMBERS PROC
 RET
 ENDP
 
+; Desenha o texto de divisor dentro da tela de input
 DRAWDIVISOR PROC    
     MOV CX, 4
     CALL ESPACOS
@@ -466,8 +472,9 @@ DRAWDIVISOR PROC
     INT 21H
         
 RET
-ENDP
+ENDP   
 
+; Desenha o texto de dividendo dentro da tela de input
 DRAWDIVIDENDO PROC
     MOV CX, 4
     CALL ESPACOS
@@ -482,6 +489,7 @@ DRAWDIVIDENDO PROC
 RET
 ENDP
 
+; Desenha o texto de radicando dentro da tela de input
 DRAWRADICANDO PROC
     MOV CX, 4
     CALL ESPACOS
@@ -496,6 +504,7 @@ DRAWRADICANDO PROC
 RET
 ENDP
 
+; Desenha o texto de resultado dentro da tela de input
 DRAWRESULTADO PROC
     MOV CX, 4
     CALL ESPACOS
@@ -510,6 +519,7 @@ DRAWRESULTADO PROC
 RET
 ENDP
 
+; Realiza a leitura do teclado dentro da tela de input e faz a verificação do input
 KBHANDLER_INPUTSCREEN PROC
     kbLoop:         ; Ativa a leitura do teclado
     MOV AH, 00H
@@ -519,7 +529,11 @@ KBHANDLER_INPUTSCREEN PROC
     CMP AX, 011BH       ; Verifica se foi clicado no Esc
     JE goBack
     
+    CMP AX, 1C0DH ;Enter
+    JE finish:
     
+    CMP AX, 0E08H ;backspace
+    JE backspace
     
     
     ; Verificação entre os numeros 0-9
@@ -529,7 +543,7 @@ KBHANDLER_INPUTSCREEN PROC
     CMP AX, 0B30H
     JG kbLoop
     
-    JMP kbLoop
+    JMP acceptedInput
     
     goBack:
         CALL CLEARSCREEN
@@ -537,10 +551,80 @@ KBHANDLER_INPUTSCREEN PROC
         CALL showMainScreen
     
     acceptedInput:
+        CMP input, 2
+        JE raizInput
         
+        divInput:
+            CMP inputCounter, 1
+            JE dividInput
+        
+            CMP inputCounter, 2
+            JE divisInput
+        
+            dividInput:       
+                MOV BX, dividCount
+                MOV dividArray[BX], AL
+                ADD dividCount, 2
+                
+                MOV AH, 2
+                MOV DL, dividArray[BX]
+                INT 21H
+                JMP kbLoop
+                 
+            divisInput:
+                MOV BX, divisCount
+                MOV divisArray[BX], AL
+                ADD divisCount, 2
+                
+                MOV AH, 2
+                MOV DL, divisArray[BX]
+                INT 21H
+                JMP kbLoop
+        
+        raizInput:
+            MOV BX, radicandoCount
+            MOV radicandoArray[BX], AL
+            ADD radicandoCount, 2
+            
+            MOV AH, 2
+            MOV DL, radicandoArray[BX]
+            INT 21H
+            JMP kbLoop
+        
+    backspace:
+        ; Decrementa a contagem do respetivo array
+        CMP inputCounter, 1
+        JE decDivid
+        CMP inputCounter, 2
+        JE decDivis
+        CMP inputCounter, 3
+        JE decRadicando       
+        
+        decDivid:
+            SUB dividCount, 2
+        decDivis:
+            SUB divisCount, 2
+        decRaiz:
+            SUB radicandoCount, 2
+    
+        ; Remove o ultimo caracter
+        MOV AH, 2
+        MOV DL, 8 ;backspace
+        INT 21H
+        
+        MOV DL, 32 ; espaço
+        INT 21H 
+        
+        MOV DL, 8 ;backspace
+        INT 21H
+        JMP kbLoop
+    
+    finish:       
 RET
 ENDP
 
+
+; Mostra a tela de input, fazendo as alterações necessárias consoante o algoritmo escolhido
 INPUTSCREEN PROC
     CALL CLEARSCREEN
     
@@ -565,12 +649,16 @@ INPUTSCREEN PROC
     
     
     inputDivisao:
+        MOV inputCounter, 1
+        CALL DRAWDIVIDENDO
+        CALL KBHANDLER_INPUTSCREEN
+        MOV inputCounter, 2
         CALL DRAWDIVISOR
         CALL KBHANDLER_INPUTSCREEN
-        CALL DRAWDIVIDENDO
         JMP resultado
         
     inputRaiz:
+        MOV inputCounter, 3
         CALL DRAWRADICANDO
         CALL KBHANDLER_INPUTSCREEN
         JMP resultado
