@@ -24,17 +24,42 @@ msgDivisor DB 'Divisor: $'
 msgDividendo DB 'Dividendo: $'   
 msgRadicando DB 'Radicando: $'
 msgResultado DB 'Resultado: $'
+msgResto DB 'Resto: $'
 inputCounter DW ? ; 1: Dividendo, 2: Divisor; 3: Radicando  
                                            
 ; Algoritmo da divisão
-dividArray DB ?
-divisArray DB ?
+dividArray DB 10 dup(10)
+divisArray DB 10 dup(10) 
+newDivisor DW 0
 dividCount DW 0
 divisCount DW 0
+HIGHORDER DW 0  
+IMULT DW 0 
+RESTO DW 0 
+QUOCIENTE DW 0  
+ARRAYPOS DW -2 
+ARRAYPOSINPUT DW -2  
+CALCQUOCIENTERESTO DW 0  
+INPUTDIGITDIVISOR DW 0 
+ARRAYRESULTDIVISAO DW 6 DUP(0) 
+QCOUNT DW -2 
+NEGATIVO DW 0
+
 
 ; Algoritmo da divisão
-radicandoArray DB ?
-radicandoCount DW 0
+radicandoArray DB 10 dup(10)
+radicandoCount DW 0  
+HIGHORDER1 DW 0  
+HIGHORDER2 DW 0
+I  DW -1
+J  DW -1
+NALGARISMO DW 0
+NDIGITSHIGHORDER DW -1   
+ARRAYPOSATUAL DW -2
+RESULTFINAL DW 0 
+AUX DW 0  
+NDIGITOSRADICANDO DW 0  
+ARRAYRESULTRAIZ DW 6 DUP(0)
 
 .CODE
 WELCOMEWINDOW proc
@@ -464,7 +489,7 @@ DRAWDIVISOR PROC
     MOV CX, 4
     CALL ESPACOS
 
-    MOV CX, 6
+    MOV CX, 2
     CALL NEWLINE
     
     MOV AH, 9
@@ -479,7 +504,7 @@ DRAWDIVIDENDO PROC
     MOV CX, 4
     CALL ESPACOS
 
-    MOV CX, 2
+    MOV CX, 6
     CALL NEWLINE
     
     MOV AH, 9
@@ -502,22 +527,18 @@ DRAWRADICANDO PROC
     INT 21H
         
 RET
-ENDP
+ENDP 
 
-; Desenha o texto de resultado dentro da tela de input
-DRAWRESULTADO PROC
-    MOV CX, 4
-    CALL ESPACOS
-
-    MOV CX, 3
-    CALL NEWLINE
-    
-    MOV AH, 9
-    MOV DX, OFFSET msgResultado
-    INT 21H
-        
+KBHANDLER_AFTEREXEC PROC
+   kbLoopAfterExec:
+   MOV AH, 00H
+   INT 16H
+   
+   CMP AX, 1C0DH ;Enter
+   JNE kbLoopAfterExec   
 RET
 ENDP
+
 
 ; Realiza a leitura do teclado dentro da tela de input e faz a verificação do input
 KBHANDLER_INPUTSCREEN PROC
@@ -533,8 +554,7 @@ KBHANDLER_INPUTSCREEN PROC
     JE finish:
     
     CMP AX, 0E08H ;backspace
-    JE backspace
-    
+    JE backspace   
     
     ; Verificação entre os numeros 0-9
     CMP AX, 0231H
@@ -561,52 +581,97 @@ KBHANDLER_INPUTSCREEN PROC
             CMP inputCounter, 2
             JE divisInput
         
-            dividInput:       
-                MOV BX, dividCount
-                MOV dividArray[BX], AL
-                ADD dividCount, 2
+            dividInput:               
+                MOV SI, dividCount
+                SUB AL, 48             
+                MOV dividArray[SI], AL
+                ADD dividCount, 1
                 
                 MOV AH, 2
-                MOV DL, dividArray[BX]
+                MOV DL, dividArray[SI] 
+                ADD DL, 48
                 INT 21H
+                
                 JMP kbLoop
-                 
-            divisInput:
-                MOV BX, divisCount
-                MOV divisArray[BX], AL
-                ADD divisCount, 2
+ 
+            divisInput:            
+                MOV SI, divisCount
+                SUB AL, 48 
+                MOV divisArray[SI], AL
+                ADD divisCount, 1
                 
                 MOV AH, 2
-                MOV DL, divisArray[BX]
+                MOV DL, divisArray[SI] 
+                ADD DL, 48
+                
                 INT 21H
+                
+                ; Converte o array de divisor para um número de forma a ser compativel com o algoritmo da divisão previamente desenvolvido
+                MOV AX, newDivisor
+                MOV CX, 10
+                MUL CX
+                
+                ; "Converte" o array de 8bits para um array de 16bits
+                MOV CH, 0
+                MOV CL, divisArray[SI]
+                
+                ADD AX, CX
+                MOV newDivisor, AX  
+                                
                 JMP kbLoop
         
         raizInput:
-            MOV BX, radicandoCount
-            MOV radicandoArray[BX], AL
-            ADD radicandoCount, 2
+            MOV SI, radicandoCount
+            SUB AL, 48
+            MOV radicandoArray[SI], AL
+            ADD radicandoCount, 1
             
             MOV AH, 2
-            MOV DL, radicandoArray[BX]
+            MOV DL, radicandoArray[SI]  
+            ADD DL, 48   
             INT 21H
             JMP kbLoop
         
-    backspace:
+    backspace:    
         ; Decrementa a contagem do respetivo array
         CMP inputCounter, 1
         JE decDivid
         CMP inputCounter, 2
         JE decDivis
         CMP inputCounter, 3
-        JE decRadicando       
+        JE decRaiz       
         
         decDivid:
-            SUB dividCount, 2
+            ; Verifica se é possivel remover mais algum digito
+            CMP dividCount, 0
+            JE kbLoop
+        
+            SUB dividCount, 1
+            JMP removeChar
+            
         decDivis:
-            SUB divisCount, 2
+            ; Verifica se é possivel remover mais algum digito
+            CMP divisCount, 0
+            JE kbLoop
+            
+            MOV DX, 0
+            MOV AX, newDivisor
+            MOV BX, 10
+            DIV BX
+            MOV newDivisor, AX
+            
+            continue:
+            SUB divisCount, 1
+            JMP removeChar
+            
         decRaiz:
-            SUB radicandoCount, 2
-    
+            ; Verifica se é possivel remover mais algum digito
+            CMP radicandoCount, 0
+            JE kbLoop        
+        
+            SUB radicandoCount, 1
+        
+        removeChar:
         ; Remove o ultimo caracter
         MOV AH, 2
         MOV DL, 8 ;backspace
@@ -622,6 +687,123 @@ KBHANDLER_INPUTSCREEN PROC
     finish:       
 RET
 ENDP
+
+RESULTADODIV PROC
+    ;MOSTRA O RESULTADO DA DIVISAO
+    MOV CX, 3
+    CALL NEWLINE
+    MOV DX, OFFSET MSGRESULTADO
+    MOV AH, 09H
+    INT 21H
+    
+    ;SEPARA OS DIGITOS DO QUOCIENTE E GUARDA NUM ARRAY ARRAYRESULTDIVISAO
+    SEPARADIGITOS: 
+        MOV DX,0
+        MOV AX, QUOCIENTE
+        MOV BX, 10
+        DIV BX
+        MOV QUOCIENTE,AX
+        ADD QCOUNT, 2
+        MOV BX, QCOUNT
+        MOV ARRAYRESULTDIVISAO[BX], DX
+        CMP QUOCIENTE, 0
+        JG SEPARADIGITOS
+        
+        ;SE FOR NEGATIVO ADICIONA - AO QUOCIENTE
+        CMP NEGATIVO,1
+        JNE MOSTRAQUOCIENTE0
+        
+        MOV DL,0F0H
+        MOV AH, 06H
+        INT 21H 
+        
+        ;MOSTRA O QUOCIENTE 
+        MOSTRAQUOCIENTE0:
+        ADD QCOUNT, 2
+        MOSTRAQUOCIENTE:
+        SUB QCOUNT, 2
+        MOV BX, QCOUNT
+        MOV AX, ARRAYRESULTDIVISAO[BX]
+        MOV DX, AX
+        ADD DX, 130H
+        MOV AH, 06H
+        INT 21H
+        CMP QCOUNT, 0
+        JNE MOSTRAQUOCIENTE
+        
+        ;separa resto digito a digito 
+        MOV CX, 1
+        CALL NEWLINE
+        MOV QCOUNT, -2
+        SEPARARESTO:
+        MOV DX,0
+        MOV AX, RESTO
+        MOV BX, 10
+        DIV BX
+        MOV RESTO,AX
+        ADD QCOUNT, 2
+        MOV BX, QCOUNT
+        MOV ARRAYRESULTDIVISAO[BX], DX
+        CMP RESTO, 0
+        JG SEPARARESTO
+        
+        MOV DX, OFFSET msgResto
+        MOV AH,09H
+        INT 21H
+        
+        ;MOSTRA O RESTO
+        MOSTRARESTO0:
+        ADD QCOUNT, 2
+        MOSTRARESTO:
+        SUB QCOUNT, 2
+        MOV BX, QCOUNT
+        MOV AX, ARRAYRESULTDIVISAO[BX]
+        MOV DX, AX
+        ADD DX, 130H
+        MOV AH, 06H
+        INT 21H
+        CMP QCOUNT, 0
+        JNE MOSTRARESTO
+RET
+ENDP
+
+;MOSTRA RESULTADO DA RAIZ QUADRADA
+MOSTRARESULTSQRT PROC
+    MOV CX, 1
+    CALL NEWLINE
+    MOV DX, OFFSET msgResultado
+    MOV AH, 09H
+    INT 21H
+    
+    ;SEPARA OS DIGITOS DO QUOCIENTE E GUARDA NUM ARRAY ARRAYRESULTDIVISAO
+    SEPARADIGITOSRAIZ: 
+        MOV DX,0
+        MOV AX, RESULTFINAL
+        MOV BX, 10
+        DIV BX
+        MOV RESULTFINAL,AX
+        ADD QCOUNT, 2
+        MOV BX, QCOUNT
+        MOV ARRAYRESULTRAIZ[BX], DX
+        CMP RESULTFINAL, 0
+        JG SEPARADIGITOSRAIZ
+        
+        ;MOSTRA O QUOCIENTE 
+        MOSTRARAIZ0:
+        ADD QCOUNT, 2
+        MOSTRARAIZ:
+        SUB QCOUNT, 2
+        MOV BX, QCOUNT
+        MOV AX, ARRAYRESULTRAIZ[BX]
+        MOV DX, AX
+        ADD DX, 130H
+        MOV AH, 06H
+        INT 21H
+        CMP QCOUNT, 0
+        JNE MOSTRARAIZ
+    RET
+ENDP
+
 
 
 ; Mostra a tela de input, fazendo as alterações necessárias consoante o algoritmo escolhido
@@ -655,16 +837,23 @@ INPUTSCREEN PROC
         MOV inputCounter, 2
         CALL DRAWDIVISOR
         CALL KBHANDLER_INPUTSCREEN
-        JMP resultado
+        CALL DIVISAO
+        CALL RESULTADODIV
+        CALL KBHANDLER_AFTEREXEC
+        JMP finalExecucao
         
     inputRaiz:
         MOV inputCounter, 3
         CALL DRAWRADICANDO
         CALL KBHANDLER_INPUTSCREEN
-        JMP resultado
-    
-    resultado:
-        CALL DRAWRESULTADO       
+        CALL SQRTALGORITMO
+        CALL MOSTRARESULTSQRT
+        CALL KBHANDLER_AFTEREXEC
+        
+    finalExecucao:
+        CALL CLEARSCREEN
+        CALL SOFTRESET
+        CALL showMainScreen            
 RET
 ENDP 
     
@@ -685,12 +874,343 @@ SOFTRESET PROC
     MOV width, 35
     MOV height, 35  
     MOV input, 0
-RET
-ENDP    
+   
+    ; Variáveis da divisão  
+    MOV dividCount, 0
+    MOV divisCount ,0
+    MOV HIGHORDER, 0
+    MOV IMULT, 0
+    MOV RESTO, 0
+    MOV QUOCIENTE, 0
+    MOV ARRAYPOS, -2
+    MOV ARRAYPOSINPUT, -2
+    MOV CALCQUOCIENTERESTO, 0
+    MOV INPUTDIGITDIVISOR, 0
+    MOV QCOUNT, -2
+    MOV NEGATIVO, 0      
     
-MAIN PROC  
+    ; Variáveis da raiz
+    MOV radicandoCount, 0
+    MOV HIGHORDER1, 0
+    MOV HIGHORDER2, 0
+    MOV I, -1
+    MOV J, -1
+    MOV NALGARISMO, 0
+    MOV NDIGITSHIGHORDER, -1
+    MOV ARRAYPOSATUAL, -2
+    MOV RESULTFINAL, 0
+    MOV AUX, 0
+    MOV NDIGITOSRADICANDO, 0
+RET
+ENDP
+
+;ALGORITMO DA DIVISAO
+DIVISAO PROC 
+    INICIO:     
+    ;OBTÉM O PRIMEIRO HIGH ORDER DO DIVIDENDO   
+    GETHIGHORDER:
+        ADD ARRAYPOS, 1 
+        MOV BX, ARRAYPOS
+        MOV AH,0 
+        MOV AL, DividArray[BX] 
+        CMP AX, 10
+        JB COMPARAHIGHORDER
+        JAE OVERFLOW
+    
+    ;COMPARA O HIGH ORDER COM O DIVISOR. SE O HIGH ORDER FOR MENOR DO QUE DIVISOR, PASSA PARA A LABEL "CONCATHIGHORDER". SE FOR MAIOR OU IGUAL PASSA PARA A LABEL "FLAG"    
+    COMPARAHIGHORDER:
+        MOV HIGHORDER, AX
+        MOV RESTO, AX
+        CMP AX, newDivisor
+        JB CONCATHIGHORDER 
+        JAE FLAG          
+    
+    ;CONCATENA O HIGH ORDER SEGUINTE, CASO O DIVISOR SEJA MAIOR DO QUE O HIGH ORDER INICIAL    
+    CONCATHIGHORDER:
+        
+        ;CERTIFICA-SE DE QUE A POSIÇÃO NO ARRAY A SEGUIR À ATUAL NÃO É 10, SENDO QUE 10 DETERMINA O FIM DO ARRAY
+        ADD ARRAYPOS, 1
+        MOV BX, ARRAYPOS
+        MOV CH, 0
+        MOV CL, DividArray[BX]
+        CMP CX, 10     
+        ;SE A POSICAO A SEGUIR FOR 10, PASSA PARA A LABEL "FLAG", SENÃO PASSA PARA A LABEL "NEXT" 
+        JNE NEXT
+        JE FLAG
+        
+        NEXT:    
+        MOV CX, 10
+        MOV DX, 0 
+        MUL CX
+        MOV CH, 0
+        MOV CL, DividArray[BX]
+        ADD AX, CX         
+        MOV HIGHORDER, AX
+        MOV RESTO, AX 
+    
+    FLAG:
+    ;INICIALIZA IMULT A -1 PARA NÃO SER FEITA 1 ITERAÇÃO A MAIS DENTRO DE "QUOCIENTECALC"                        
+    MOV IMULT, -1 
+    
+    ;ITERA ATÉ ENCONTRAR UM VALOR PARA IMULT MAIOR DO QUE O RESTO. SE IMULT FOR IGUAL AO RESTO, PASSA PARA A LABEL "CALCOPERRESTO". QUANDO IMULT FOR MAIOR DO QUE O RESTO, SALTA PARA A LABEL "ITERANTERIOR"
+    QUOCIENTECAL:
+        INC IMULT
+        MOV CX, IMULT
+        MOV AX, newDivisor
+        MOV DX, 0
+        MUL CX 
+        CMP AX, RESTO
+        JB QUOCIENTECAL
+        JE CALCOPERRESTO 
+    
+    ;ITERA O VALOR DE IMULT ANTERIOR QUE RESPEITE A CONDIÇÃO IMULT * DIVISOR < RESTO     
+    ITERANTERIOR:
+        DEC IMULT 
+    
+    ;CALCULA O VALOR QUE VAI SER SUBTRAIDO PELO RESTO 
+    CALCOPERRESTO:
+        MOV AX, IMULT
+        MUL newDivisor
+        MOV BX, RESTO
+        MOV CALCQUOCIENTERESTO, AX
+    
+    ;EFETUA A OPERAÇÃO RESTO - CALCQUOCIENTERESTO    
+    OPERACAORESTO:
+        MOV AX, RESTO
+        SUB AX, CALCQUOCIENTERESTO
+        MOV RESTO, AX
+    
+    ;ESTRUTURA DE CONTROLO DO QUOCIENTE   
+    CALCQUOCIENTE2:
+        ;CERTIFICA-SE DE QUE A POSIÇÃO NO ARRAY A SEGUIR À ATUAL NÃO É 10, SENDO QUE 10 DETERMINA O FIM DO ARRAY
+        MOV BX, ARRAYPOS
+        ADD BX,1
+        CMP DividArray[BX], 10
+        ;SE A POSICAO A SEGUIR FOR 10, PASSA PARA A LABEL "CONCATQUOCIENTE", SENÃO PASSA PARA A LABEL "FLAG2" 
+        JNE FLAG2
+        JE  CONCATQUOCIENTE
+            
+        FLAG2:
+        MOV DX, 0 
+        MOV AX, RESTO
+        MOV BX, 10
+        MUL BX
+        MOV RESTO, AX
+        
+        ;CERTIFICA-SE DE QUE A POSIÇÃO NO ARRAY A SEGUIR À ATUAL NÃO É 10, SENDO QUE 10 DETERMINA O FIM DO ARRAY 
+        MOV BX, ARRAYPOS
+        ADD BX,1
+        CMP DividArray[BX], 10
+        ;SE A POSICAO A SEGUIR NÃO FOR 10, PASSA PARA A LABEL "CONCATRESTO"
+        JNE CONCATRESTO
+    
+    ;CONCATENA O VALOR CALCULADO ANTERIORMENTE AO RESTO
+    CONCATRESTO:
+        MOV AX, RESTO 
+        MOV CH, 0
+        MOV CL, DividArray[BX]
+        ADD AX, CX 
+        MOV RESTO, AX
+    
+    ;CONCATENA O VALOR CALCULADO ANTERIORMENTE AO QUOCIENTE
+    CONCATQUOCIENTE:
+        MOV AX, 10
+        MUL QUOCIENTE
+        ADD AX, IMULT
+        MOV QUOCIENTE, AX
+    
+    ;VERIFICA SE A POSICAO ATUAL É A ULTIMA POSICAO DO ARRAY          
+    CONDICAOJUMP:
+        MOV IMULT, -1
+        MOV BX, ARRAYPOS
+        ADD BX,1
+        ADD ARRAYPOS,1
+        CMP DividArray[BX], 10
+        JNE QUOCIENTECAL
+        JE  OVERFLOW                        
+    OVERFLOW:
+        RET
+ENDP
+
+;ALGORITMO DA RAIZ QUADRADA
+SQRTALGORITMO PROC
+    NDIGITOS: ;DEVOLVE O NÚMERO DE ALGARISMO DO RADICANDO
+       ADD ARRAYPOS, 1 
+       INC NALGARISMO 
+       MOV BX, ARRAYPOS
+       MOV AH, 0
+       MOV AL, radicandoArray[BX] 
+       MOV CX, ARRAYPOS
+       ADD CX, 1
+       MOV BX, CX
+       MOV CH, 0
+       MOV CL, radicandoArray[BX]
+       CMP CX, 10
+       JE ISEVEN
+       JNE NDIGITOS
+    
+    ISEVEN: ;VERIFICA SE O NUMERO DE DIGITOS É PAR
+        MOV DX,0  
+        MOV BX, 2 
+        MOV AX, NALGARISMO
+        DIV BX  
+        CMP DX, 0
+        JNE GETHIGHORDERPAIRIFNOTEVEN
+        JE  GETHIGHORDERPAIRIFEVEN
+        
+    GETHIGHORDERPAIRIFNOTEVEN:  ;OBTEM O HIGH ORDER SE NALGARISMO FOR IMPAR   
+        ADD ARRAYPOSATUAL, 1
+        MOV BX, ARRAYPOSATUAL
+        MOV AH, 0
+        MOV AL, radicandoArray[BX] 
+        MOV HIGHORDER1, AX
+        DEC NALGARISMO
+        JMP ITERACAO1    
+     
+    GETHIGHORDERPAIRIFEVEN:   ;OBTEM O HIGH ORDER SE NALGARISMO FOR PAR
+        ADD ARRAYPOSATUAL, 1
+        MOV BX, ARRAYPOSATUAL
+        MOV AH, 0
+        MOV AL, radicandoArray[BX] 
+        MOV CX, 10
+        MUL CX
+        MOV BX, ARRAYPOSATUAL
+        ADD BX, 1
+        MOV ARRAYPOSATUAL, BX
+        MOV CH, 0
+        MOV CL, radicandoArray[BX]
+        ADD AX, CX        
+        MOV HIGHORDER1, AX       
+      
+    ITERACAO1: ;DESCOBRE QUAL O VALOR DE I QUE É MAIOR DO QUE O VALOR DO HIGHORDER1
+        INC I
+        MOV AX,I
+        MUL AX
+        CMP AX, HIGHORDER1
+        JA DECREMENT 
+        JBE ITERACAO1
+    
+    DECREMENT: ;DECREMENTA I PARA UTILIZARMOS O VALOR CORRETO
+        DEC I 
+    
+    SUBTRACAO:  ;SUBTRAI O HIGHORDER AO VALOR GUARDADO EM AX MULTIPLICADO POR I
+        MOV AX, ARRAYPOSATUAL
+        ADD AX, 1      
+        MOV BX,AX
+        CMP radicandoArray[BX], 10
+        JE FINALRESULT1
+        
+        MOV AX, I
+        MUL AX
+        SUB HIGHORDER1, AX 
+    
+    GETNEXTHIGHORDERPAIR:   ;OBTEM O HIGH ORDER SE NALGARISMO FOR PAR
+        ADD ARRAYPOSATUAL, 1
+        MOV BX, ARRAYPOSATUAL
+        MOV AH, 0
+        MOV AL, radicandoArray[BX] 
+        MOV CX, 10
+        MUL CX
+        MOV BX, ARRAYPOSATUAL
+        ADD BX, 1
+        MOV ARRAYPOSATUAL, BX
+        MOV CH, 0
+        MOV CL, radicandoArray[BX]
+        ADD AX, CX        
+        MOV HIGHORDER2, AX
+        
+            
+    MOV AX, HIGHORDER2
+    GETHIGHORDERNDIGITS: ;OBTEM O NUMERO DE DIGITOS DO HIGHORDER
+        MOV DX, 0
+        INC NDIGITSHIGHORDER
+        MOV BX, 10
+        DIV BX
+        CMP AX, 0       
+        JNE GETHIGHORDERNDIGITS
+    
+    ELEVADO: ;VERIFICA QUAL É A POTENCIA DE 10 MAIS ADEQUADA PARA O PASSO SEGUINTE
+        MOV AX, 10
+        MUL AX
+        MOV CX, NDIGITSHIGHORDER
+        DEC NDIGITSHIGHORDER
+        CMP CX, 0
+        JNE ELEVADO
+
+    
+    CONCATHIGHORDERRAIZ:   ;CONCATENA O PROXIMO HIGHORDER AO HIGHORDER ATUAL
+        MOV BX, HIGHORDER1
+        MUL BX
+        ADD AX, HIGHORDER2 
+        MOV HIGHORDER1, AX 
+        
+    OPER1: ;OPERACAO (2*I*10)
+        MOV AX,I
+        MOV BX, 2
+        MUL BX
+        MOV BX, 10
+        MUL BX
+        MOV AUX, AX
+    
+    DESCOBREJ:  ;DESCOBRE O J MAIOR DO QUE O NECESSARIO PARA A PROXIMA OPERACAO
+        INC J
+        MOV BX, J
+        MOV AX, AUX
+        ADD AX, BX
+        MUL BX
+        MOV BX, HIGHORDER1
+        CMP AX, BX
+        JG DECREMENTAJ
+        JLE DESCOBREJ
+    
+    DECREMENTAJ: ;DECREMENTA J PARA O VALOR NECESSARIO
+        DEC J
+    
+    OPER2: ; ADICIONA J À VARIAVEL "AUX" E MULTIPLICA POR J O RESULTADO EM AX.
+        MOV AX,AUX
+        MOV BX, J
+        ADD AX, J
+        MUL J
+        MOV AUX,AX
+        
+    SUBTRACAO2:
+        MOV AX, HIGHORDER1
+        MOV BX, AUX
+        SUB AX, BX
+        MOV HIGHORDER1, AX
+    
+    CONCATI: ;CONCATENA O I AO I ANTERIOR
+        MOV AX, I
+        MOV BX, 10
+        MUL BX     
+        ADD AX, J
+        MOV I, AX
+        
+        MOV BX, ARRAYPOSATUAL
+        ADD BX, 1
+        CMP radicandoArray[BX],10        
+        JNE GETNEXTHIGHORDERPAIR
+        JE FINALRESULT1
+    
+    FINALRESULT1: ;MOSTRA O RESULTADO FINAL
+        MOV RESULTFINAL,0
+        MOV AX,I
+        MOV RESULTFINAL, AX 
+    
+    MOV ARRAYPOS,0
+    MOV BX, ARRAYPOS
+    CMP radicandoArray[BX],0
+    JE FINAL   
+             
+    FINAL:
+    RET
+ENDP
+    
+    
+MAIN PROC
     MOV DX, @DATA           ; Variaveis
-    MOV DS, DX                             
+    MOV DS, DX
+                             
     
     CALL CLEARSCREEN
     
