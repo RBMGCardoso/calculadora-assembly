@@ -283,7 +283,7 @@ endp
 showMainScreen proc
     CALL WELCOMEWINDOW
     CALL insideSquareText   
-    ;CALL desenhaQuadrados    
+    CALL desenhaQuadrados    
     CALL recebeMouseKeyboardInput
     
     ; Deteta qual numero foi pressionado, e verifica se está dentro dos valores possiveis
@@ -867,7 +867,7 @@ INPUTSCREEN PROC
     MOV y, 10
     
     CALL DRAWNUMBERS
-    ;CALL PRINTINPUTSCREEN
+    CALL PRINTINPUTSCREEN
     
     CMP input, 1
     JE inputDivisao 

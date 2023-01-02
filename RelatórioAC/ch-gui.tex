@@ -1,4 +1,5 @@
 \chapter{Interface Gráfica}
+\setlength{\parindent}{0pt}
 
 \section{Objetivo}
 Para permitir a obtenção dos dados escolhidos pelo utilizador foi necessário utilizar uma interface gráfica capaz de o fazer. Esta interface deveria permitir a escolha entre os dois algoritmos utilizando ou o rato ou o teclado como meio de input. A interface iria ainda precisar de mostrar os resultados dos algoritmos após a sua execução.
@@ -10,20 +11,43 @@ Para permitir a obtenção dos dados escolhidos pelo utilizador foi necessário 
 		\item Desenhar os quadrados que representam botões onde o utilizador poderá clicar
 		\item Ler o input do teclado que permite ao utilizador escolher se pretende utilizar o teclado ou o rato tanto para introduzir os inputs, como para escolher qual algoritmo pretende executar
 	\end{enumerate}
-\subsection{Tela da Divisão}
+\subsection{Tela de Input}
 \begin{enumerate}
 	\item Desenhar os 14 botões necessários para acomodar os inputs possíveis 
 	\item Escrever o texto dentro dos botões todos os inputs possíveis\footnote{Algarismos de 0-9, \textbf{'-'}, \textbf{','}, backspace, confirmação}
-	\item Mostrar o texto "Dividendo", de forma a indicar ao utilizador que pode inserir o valor pretendido
+	\item Mostrar o texto "Dividendo" ou "Radicando", de forma a indicar ao utilizador que pode inserir o valor pretendido
+	\item Ler o teclado e adicionar os valores inseridos a um array
+	\item Mostrar o array do passo acima consoante o utilizador adiciona ou remove valores
+	\item Mostrar o texto "Divisor" (caso seja a tela de input da divisão), de forma a indicar ao utilizador que pode inserir o valor pretendido
 	\item Ler o teclado e o rato e adicionar os valores inseridos a um array
 	\item Mostrar o array do passo acima consoante o utilizador adiciona ou remove valores
-	\item Mostrar o texto "Divisor", de forma a indicar ao utilizador que pode inserir o valor pretendido
-	\item Ler o teclado e o rato e adicionar os valores inseridos a um array
-	\item Mostrar o array do passo acima consoante o utilizador adiciona ou remove valores
-	\item Executar o algoritmo da divisão e mostrar o resultado juntamente com o texto "Resultado"
+	\item Executar o respetivo algoritmo e mostrar o resultado juntamente com o texto "Resultado"\\
 \end{enumerate}
+\setcounter{footnote}{0} 
+\section{Detalhes de funcionamento}
+\subsection{Inserção de dígitos}
+Para a inserção de dígitos foi utilizado a interrupção 16H que permite a leitura do teclado e devolve o código ASCII do caractere pressionado. Sabendo o código da tecla pressionada basta verificar se este está dentro do intervalo aceite, neste caso, dígitos de 0-9 e caso se encontre dentro de cujo intervalo adiciona-se o algarismo\footnote{Visto que os códigos ASCII dos dígitos 0-9 começam no 48 é necessário subtrair esse valor ao código original de forma a adicionar o digito correto ao array} ao respetivo array.  \\
 
-\subsection{Tela da Raiz}
-\begin{enumerate}
-	\item 
-\end{enumerate}
+Por motivos de compatibilidade com o algoritmo da divisão previamente desenvolvido foi necessário armazenar o divisor em formato de número e não só dentro de um array. Para desenvolver esta funcionalidade, foi criada uma nova variável que armazenaria o divisor, onde iriamos concatenar \footnote{Utilizando $var = var\times 10 + digito$}os dígitos inseridos á medida que fossem selecionados.
+
+\subsection{Visualização do input}
+Para que o utilizador conseguisse visualizar os dados inseridos utilizou-se a interrupção 21H para imprimir os dígitos na janela da aplicação. Sempre que o utilizador inseria um digito no respetivo array, esse mesmo valor era escrito utilizando a interrupção 21H.
+
+\subsection{Backspace}
+No desenvolvimento da funcionalidade do Backspace foi utilizada a interrupção 21H novamente. Visto que impressão do caractere do backspace não remove o caractere anterior e ao invés disso, volta uma casa atrás, podemos utilizar esta funcionalidade para recuar um digito, imprimir um espaço\footnote{De forma a remover o caractere onde se encontra o cursor} e imprimir novamente um backspace para recuarmos uma casa.\\
+
+Porém, remover o ultimo caractere impresso não remove o mesmo do array onde estão a ser armazenados todos os dígitos escolhidos, para resolver esse problema basta decrementar a posição atual do array por 1. Desta forma, o próximo digito inserido irá substituir no array o caractere que foi eliminado. \\
+
+Visto que ainda temos a variável que armazena o divisor em formato de número, é necessário dividir esta variável por 10 de forma a remover o digito mais á direita, ou seja, o ultimo digito adicionado.
+
+\titleformat{\subsection}[runin]
+{\normalfont\large\bfseries}{\thesubsection}{1em}{}
+\subsection{Negativo} \hfill \textcolor{red}{\underline{Esta funcionalidade é apenas utilizada no algoritmo da divisão}}\\ \\
+Visto que numa divisão é possível a utilização de valores negativos foi necessário implementar um método que permitisse simbolizar que os números eram negativos. A norma é colocar o sinal de negativo antes do número e para facilitar a implementação foi decidido que se deveria limitar o input para que apenas fosse possível inserir o '\textbf{-}'. antes de qualquer digito.\\
+
+Para fazer esta verificação, basta confirmar que o tamanho do array do dividendo/divisor\footnote{Dependendo de qual deles está a ser inserido} é igual a 0, querendo isto dizer que o array está vazio e que o '\textbf{-}' será o primeiro caractere.\\
+
+É ainda necessário impedir a inserção de dois '\textbf{-}', para isto foi utilizada a flag implementada no algoritmo da divisão que indica se um número é negativo ou não. Considerando que o dividendo é o primeiro valor inserido, este só pode ter a flag a 1 ou 0, caso seja negativo ou não respetivamente. Logo se $flag = 1$ impedimos que o utilizador coloque outro '\textbf{-}', utilizando a mesma lógica para o divisor.
+
+
+

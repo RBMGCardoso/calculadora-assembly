@@ -30,4 +30,66 @@ raiz quadrada do valor inserido, e devolver o seu resultado.
 	\item Saltar para o passo 4.
 \end{enumerate}
 
-\section{Fluxograma}
+\newpage
+\newpage
+\footnotesize
+\begin{adjustwidth}{-2.2cm}{-2cm}
+	\section{Fluxograma}
+	\fbox{
+	\begin{tikzpicture}[node distance=2cm]
+		% Blocos
+		\node (start) [startstop] {Inicio};
+		\node (pr1) [process, right of=start, xshift=1.5cm] {Inicializar variáveis};
+		\node (in1) [io, right of=pr1, xshift=1.8cm] {Receber radicando};
+		\node (pr2) [process, right of=in1, xshift=1.8cm] {Calcular nº de algarismos do radicando};
+		\node (pr3) [process, right of=pr2, xshift=1.8cm] {$nGrupos = \frac{nAlgarismos}{2}$};
+		\node (dec1) [decision, below of=pr3, yshift=-0.7cm] {Resto do calculo anterior = 1};
+		\node (pr4) [process, left of=dec1, xshift=-2.5cm] {$nGrupos = nGrupos$-1};
+		\node (dec2) [decision, left of=pr4, xshift=-2.2cm] {nGrupos=1};
+		\node (pr5) [process, left of=dec2, xshift=-2.2cm, yshift=0.7cm] {$HighOrder = Radicando$};
+		\node (pr6) [process, left of=dec2, xshift=-2.2cm, yshift=-0.7cm] {$HighOrder = \frac{Radicando}{10^{(nGrupos)}}$};
+		
+		\node (dec3) [decision, below of=start, yshift=-4cm]{Primeira iteração?};
+		\node (pr7) [process, below of=dec3]{Calcular $aux = aux^2$ até não ultrapassar o HighOrder};
+		\node (pr8) [process, right of=dec3, xshift=2.4cm]{Concatenar HighOrder a Aux};
+		\node (pr9) [process, right of=pr8, xshift=1.5cm]{Concatenar uma variável \\ iteradora(i) a Elevado};
+		\node (pr10) [process, right of=pr9, xshift=1.5cm] {Calcular $(2\times Elevado:i)\times i$, incrementando $i$ até não ultrapassar aux};
+		\node (pr11) [process, right of=pr10, xshift=1.5cm] {Concatenar $i$ á variável Elevado};
+		\node (dec4) [decision, below of=pr7]{Primeira iteração?};
+		\node (dec5) [decision, right of=dec4, xshift=5cm, yshift=-2cm] {$nGrupos = 1$};
+		\node (pr12) [process, right of=dec5, xshift=2.3cm]{$Aux = Elevado^2 - HighOrder$};
+		\node (pr13) [process, right of=pr12, xshift=1.7cm]{Remover o grupo HighOrder mais à esquerda};
+		\node (pr14) [process, below of=dec5]{$Resultado = Elevado$};
+		\node (end) [startstop, below of=pr14] {Fim};
+		
+		% Setas
+		\draw [arrow] (start) -- (pr1);
+		\draw [arrow] (pr1) -- (in1);
+		\draw [arrow] (in1) -- (pr2);
+		\draw [arrow] (pr2) -- (pr3);
+		\draw [arrow] (pr3) -- (dec1);
+		\draw [arrow] (dec1)  -- (14.9, -4) -- node[anchor=south]{Não}(6.2, -4) -- (dec2);
+		\draw [arrow] (dec1) -- node[anchor=south]{Sim}(pr4);
+		\draw [arrow] (pr4) -- (dec2);
+		\draw [arrow] (dec2) -- node[anchor=south]{Sim}(pr5);
+		\draw [arrow] (dec2) -- node[anchor=north]{Não}(pr6);
+		\draw [arrow]  (pr5) -- (0, -2) -- (dec3);
+		\draw [arrow]  (pr6) -- (0, -3.4) -- (dec3);
+		\draw [arrow] (dec3) -- node[anchor=east]{Sim} (pr7);
+		\draw [arrow] (pr7) -- (dec4);
+		\draw [arrow] (dec3) --  node[anchor=south]{Não}(pr8);
+		\draw [arrow] (pr8) -- (pr9);
+		\draw [arrow] (pr9) -- (pr10);
+		\draw [arrow] (pr10) -- (pr11);
+		\draw [arrow] (dec4) |-  node[anchor=east]{Sim}(dec5);
+		\draw [arrow] (dec4)  -|  node[anchor=north]{Não}(pr8);
+		\draw [arrow] (pr11) |- (7,-7.5) -- (dec5);
+		\draw [arrow] (dec5) --  node[anchor=south]{Não} (pr12);
+		\draw [arrow] (pr12) -- (pr13);
+		\draw [arrow] (pr13)  -| (17, -4.5) -| (6.2,-4) -- (dec2);
+		\draw [arrow] (dec5) --  node[anchor=east]{Sim}(pr14);
+		\draw [arrow] (pr14) -- (end);
+		
+		                                                                                
+	\end{tikzpicture}}
+\end{adjustwidth}

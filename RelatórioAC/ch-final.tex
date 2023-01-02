@@ -1,0 +1,39 @@
+\chapter{Problemas no desenvolvimento}
+\begin{itemize}
+	\normalsize
+	\setlength\parindent{24pt}
+	
+	\item Visto que os algoritmos da Divisão e Raiz previamente desenvolvidos não suportavam números decimais, foi escolhido não adicionar na tela de input o botão da '\textbf{,}'.
+	\begin{adjustwidth*}{0.5cm}{0cm}
+			\textcolor{blue}{Isto poderia ser corrigido adicionando uma variável que contasse o número de dígitos antes do ponto decimal e alterando os cálculos para suportar esta funcionalidade.\\}
+	\end{adjustwidth*}
+	
+	\item À custa da variável de Divisor ser armazenada não num array mas como um número, não é possível utilizar valores superiores a 65536, visto que qualquer valor superior ao supramencionado irá dar overflow no programa. 
+	\begin{adjustwidth*}{0.5cm}{0cm}
+		\textcolor{blue}{A forma de resolver esta falha seria alterar o código de forma a armazenar a variável Divisor num array.\\}
+	\end{adjustwidth*}
+
+	\item Existem certos casos, nomeadamente no algoritmo da Divisão, onde a concatenação com 0 falha, visto que em números inteiros, os $0s$ à esquerda são ignorados.
+	\begin{adjustwidth*}{0.5cm}{0cm}
+		\textcolor{blue}{Uma possível forma de resolver este problema é armazenar as variáveis, onde pode ser necessário concatenar com um zero á esquerda, dentro de um array.\\}
+	\end{adjustwidth*}
+
+	\item Devido a um desentendimento sobre os objetivos do trabalho e uma compreensão tardia sobre o que realmente era solicitado, a tela de input funciona à base do teclado e não do cursor do mouse como terá sido pedido. 
+	\begin{adjustwidth*}{0.5cm}{0cm}
+		\textcolor{blue}{Uma solução seria suportar a interrupção 33H, responsável pelo rato, em simultâneo com a interrupção 16H do teclado.\\}
+	\end{adjustwidth*}
+
+	\item Por falta de melhor conhecimento na altura do desenvolvimento, a utilização dos dois métodos de input (Mouse e Teclado) é possível na tela inicial, porém  o utilizador tem primeiro que escolher o método desejado utilizando o teclado.
+	\begin{adjustwidth*}{0.5cm}{0cm}
+		\textcolor{blue}{Este problema seria evitado se fosse utilizada a interrupção do mouse enquanto não fosse detetado o clique de uma tecla\\}
+	\end{adjustwidth*}
+	
+	\item Visto que os arrays onde são armazenados os dígitos necessários, são inicializados com um valor fixo de 10 casas, não é possível a utilização de números com mais de 10 algarismos.
+	\begin{adjustwidth*}{0.5cm}{0cm}
+		\textcolor{blue}{Uma possível solução, embora não ótima, seria inicializar o array com um número exagerado de casas de forma a permitir mais dígitos. Porém, esta solução não resolve o problema e seria mais correto simplesmente limitar o input a 10 casas. \\}
+	\end{adjustwidth*}
+\end{itemize}
+
+\chapter*{Conclusão}
+\normalsize
+Apesar de existirem alguns problemas no programa final,  e da utilização de uma linguagem focada para uma arquitetura já bastante desatualizada, limitando assim as possibilidades dessa mesma linguagem, é possível afirmar que o programa se encontra num estado funcional utilizando uma grande porcentagem das funcionalidades solicitadas para o mesmo.  

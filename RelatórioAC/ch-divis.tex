@@ -20,6 +20,52 @@ Este algoritmo pretende receber as variáveis, dividendo, e divisor (podendo est
 		\item Caso não existam, obter o valor do resultado a partir da expressão, \\$Resto = Resto - (i\times Divisor)$
 	\end{enumerate}
 \end{enumerate}
-
-\section{Fluxograma}
+\newpage
+\footnotesize
+\begin{adjustwidth}{-1.7cm}{-2cm}
+	\section{Fluxograma}
+	\fbox{
+	\begin{tikzpicture}[node distance=2cm]	
+		% Blocos
+		\node (start) [startstop] {Inicio};
+		\node (pr1) [process, below of=start] {Inicializar variáveis};
+		\node (in1) [io, below of=pr1] {Receber Dividendo e Divisor};
+		\node (pr2) [process, below of=in1] {Retirar HighOrder do dividendo};
+		\node (pr3) [process, below of=pr2] {$Resto = HighOrder$};
+		\node (pr4) [process, below of=pr3] {$i = 0$};
+		\node (pr5) [process, below of=pr4] {$i$++};
+		\node (pr6) [process, below of=pr5] {$aux = i\times Divisor$};
+		\node (dec1) [decision, below of=pr6] {$i\times Divisor \geq Resto$};
+		\node (pr7) [process, below of=dec1] {Utilizar $i$ atual};
+		\node (pr8) [process, right of=dec1, xshift=2.5cm] {Utilizar $i$++};
+		\node (pr9) [process, right of=pr7, xshift=2.5cm] {Concatenar $i$ ao quociente};
+		\node (dec2) [decision, right of=pr9, xshift=2.5cm] {Algarismos do dividendo = 0};
+		\node (pr10) [process, above of=dec2, yshift=0.5cm] {Utilizar o High-Order seguinte} ;
+		\node (pr11) [process, right of=dec2, xshift=2.5cm] {Calcular resto final} ;
+		\node (pr12) [process, above of=pr11] {$Resto = Resto Anterior - (i\times Divisor)$} ;
+		\node (end) [startstop, above of = pr12] {Fim};
+		
+		% Setas
+		\draw [arrow] (start) -- (pr1) ;
+		\draw [arrow] (pr1) -- (in1) ;
+		\draw [arrow] (in1) -- (pr2) ;
+		\draw [arrow] (pr2) -- (pr3) ;
+		\draw [arrow] (pr3) -- (pr4) ;
+		\draw [arrow] (pr4) -- (pr5) ;
+		\draw [arrow] (pr5) -- (pr6) ;
+		\draw [arrow] (pr6) -- (dec1) ;
+		\draw [arrow] (dec1) -- node[anchor=west]{igual}(pr7) ;
+		\draw [arrow] (dec1) -- node[anchor=north]{maior}(pr8) ;
+		\draw [arrow] (dec1) -- (-2,- 16) -- node[anchor=east]{$menor$}(-2, -12) -- (pr5);
+		\draw [arrow] (pr7) -- (pr9);
+		\draw [arrow] (pr8) -- (pr9);
+		\draw [arrow] (pr9) -- (dec2);
+		\draw [arrow] (dec2) -- node[anchor=west]{Não} (pr10);
+		\draw [arrow] (dec2) -- node[anchor=north]{Sim}(pr11);
+		\draw [arrow] (pr10) |- (pr3);;
+		\draw [arrow] (pr11) -- (pr12);
+		\draw [arrow] (pr12) -- (end);
+		
+	\end{tikzpicture}}
+\end{adjustwidth}	
 
