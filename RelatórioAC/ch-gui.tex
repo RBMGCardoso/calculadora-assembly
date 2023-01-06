@@ -62,7 +62,7 @@ Para fazer esta verificação, basta confirmar que o tamanho do array do dividen
 	\node (pr1) [process, right of=start, xshift=2cm] {WelcomeWindow};
 	\node (pr2) [process, right of=pr1, xshift=2cm] {InsideSquareText};
 	\node (pr3) [process, right of=pr2, xshift=2cm] {DesenhaQuadrados};
-	\node (pr4) [process, below of=pr3] {RecebeMouse-KeyboardInput};
+	\node (pr4) [process, below of=pr3, yshift=0.5cm] {RecebeMouse-KeyboardInput};
 	\node (pr5) [process, left of=pr4, xshift=-2cm] {InputScreen};
 	\node (end) [startstop, left of=pr5, xshift=-2cm] {Fim};
 	
@@ -83,7 +83,7 @@ Para fazer esta verificação, basta confirmar que o tamanho do array do dividen
 		\node (pr1) [process, right of=start, xshift=2cm] {Adiciona linhas de formar a alinhar welcomeString ao centro da tela};
 		\node (pr2) [process, right of=pr1, xshift=2cm] {Imprime a welcome-String};
 		\node (pr3) [process, right of=pr2, xshift=2cm] {Adiciona 2 linhas};
-		\node (pr4) [process, below of=pr3] {Imprime a start-String};
+		\node (pr4) [process, below of=pr3, yshift=0.5cm] {Imprime a start-String};
 		\node (end) [startstop, left of=pr4, xshift=-2cm] {Fim};
 		
 		% Setas
@@ -109,33 +109,131 @@ Para fazer esta verificação, basta confirmar que o tamanho do array do dividen
 		\draw [arrow] (pr2) -- (end) ;
 \end{tikzpicture}}
 
-\subsection{InsideSquareText}
+\subsection{DesenhaQuadrados}
 \fbox{
 	\begin{tikzpicture}[node distance=2cm]
 		% Nodos
-		\node (start) [startstop] {Inicio};
-		\node (pr1) [process, right of=start, xshift=2cm] {Adiciona linhas de formar a alinhar buttonString á posição desejada};
-		\node (pr2) [process, right of=pr1, xshift=2cm] {Imprime a button-String};
-		\node (end) [startstop, right of=pr2, xshift=2cm] {Fim};
+		\node (start) [startstop] {verticalLines};
+		\node (pr1) [process, right of=start, xshift=2cm] {Inicializa as variáveis com os valores pretendidos};
+		\node (pr2) [process, right of=pr1, xshift=2cm] {Desenha um pixel na posição (x,y)};
+		\node (pr3) [process, right of=pr2, xshift=2cm] {Incrementa $y$};
+		\node (dec1) [decision, below of=pr3,text width=20mm] {$y$<$larguraLim$};
+		\node (end) [startstop, left of=dec1, xshift=-2cm] {call horizontalLines};
+		
+		\node (2start) [startstop, below of=start, yshift=-2cm] {horizontalLines};
+		\node (2pr1) [process, right of=2start, xshift=2cm] {Inicializa as variáveis com os valores pretendidos};
+		\node (2pr2) [process, right of=2pr1, xshift=2cm] {Desenha um pixel na posição (x,y)};
+		\node (2pr3) [process, right of=2pr2, xshift=2cm] {Incrementa $x$};
+		\node (2dec1) [decision, below of=2pr3,text width=17mm] {x< comprimentoLim};
+		\node (2end) [startstop, left of=2dec1, xshift=-2cm] {Fim};
 		
 		% Setas
 		\draw [arrow] (start) -- (pr1) ;
 		\draw [arrow] (pr1) -- (pr2) ;
-		\draw [arrow] (pr2) -- (end) ;
+		\draw [arrow] (pr2) -- (pr3) ;
+		\draw[arrow] (pr3) -- (dec1);
+		\draw[arrow] (dec1) -- node[anchor=east]{sim}(pr2);
+		\draw[arrow] (dec1) -- node[anchor=north]{não}(end);
+		
+		\draw [arrow] (2start) -- (2pr1) ;
+		\draw [arrow] (2pr1) -- (2pr2) ;
+		\draw [arrow] (2pr2) -- (2pr3) ;
+		\draw[arrow] (2pr3) -- (2dec1);
+		\draw[arrow] (2dec1) -- node[anchor=east]{sim}(2pr2);
+		\draw[arrow] (2dec1) -- node[anchor=north]{não}(2end);
+		
+		\draw[arrow] (end) -| (2start);
+\end{tikzpicture}} 
+
+\subsection{RecebeMouseKeyboardInput}
+\fbox{
+\begin{tikzpicture}[node distance=2cm]
+		% Nodos
+		\node(start)[startstop]{Inicio};
+		\node(pr1)[process, right of=start, xshift=2cm]{Iniciar inter-rupção do teclado};
+		\node(dec1)[decision, right of=pr1, xshift=2cm, text width=10mm]{Escolha válida?};
+		\node(dec2)[decision, right of=pr2, xshift=1.5cm, text width=13mm]{Valor escolhido};
+		\node(pr2)[process, below of=dec2]{Iniciar inter-rupção do teclado};
+		\node(pr3)[process, below of=pr2]{Iniciar inter-rupção do mouse};
+		\node(pr4)[process, left of=pr2, xshift=-2cm]{Verificar input};
+		\node(pr5)[process, left of=pr3, xshift=-2cm]{Verificar \\ botão do rato};
+		\node(pr6)[process, left of=pr5, xshift=-2cm]{Verificar \\ posição do rato};
+		\node(end)[startstop, left of=pr6, xshift= -1.5cm, yshift=2cm]{Final};
+		
+		% Setas
+		\draw[arrow] (start) -- (pr1);
+		\draw[arrow] (pr1) -- (dec1);
+		\draw[arrow] (dec1) -- node[anchor=west]{não}(8, 1) -| (pr1);
+		\draw[arrow] (dec1) -- node[anchor=south]{sim}(dec2);
+		\draw[arrow] (dec2) -- node[anchor=east]{1}(pr2);
+		\draw[arrow] (dec2) -- node[anchor=south]{2}(13.5, 0) |- (pr3);
+		\draw[arrow] (pr2) -- (pr4);
+		\draw[arrow] (pr3) -- (pr5);
+		\draw[arrow](pr5) -- (pr6);
+		\draw[arrow] (pr4) -- node[anchor=south, text width=30mm]{Input escolhido = tecla pressionada}(end);
+		\draw[arrow] (pr6) -| node[anchor=north, text width=30mm]{Input escolhido = botão clicado}(end);
 \end{tikzpicture}}
 
-
-\subsection{InsideSquareText}
+\titleformat{\subsection}[runin]
+{\normalfont\large\bfseries}{\thesubsection}{1em}{}
+\subsection{KbHandlerInputScreen} \hfill \textcolor{red}{\underline{Exemplo do input da divisão}}
+\titleformat{\subsection}[block]
+{\normalfont\large\bfseries}{\thesubsection}{1em}{}
 \fbox{
-	\begin{tikzpicture}[node distance=2cm]
-		% Nodos
-		\node (start) [startstop] {Inicio};
-		\node (pr1) [process, right of=start, xshift=2cm] {Adiciona linhas de formar a alinhar buttonString á posição desejada};
-		\node (pr2) [process, right of=pr1, xshift=2cm] {Imprime a button-String};
-		\node (end) [startstop, right of=pr2, xshift=2cm] {Fim};
-		
-		% Setas
-		\draw [arrow] (start) -- (pr1) ;
-		\draw [arrow] (pr1) -- (pr2) ;
-		\draw [arrow] (pr2) -- (end) ;
+\begin{tikzpicture}[node distance=2cm]
+	% Nodos
+	\node(start)[startstop]{Inicio};
+	\node(pr1)[process, right of=start, xshift=2cm]{Iniciar inter-rupção do teclado};
+	\node(dec1)[decision, right of=pr1, text width=15mm, yshift=-2cm]{Input \\ selecionado};
+	\node(pr2)[process, below of=dec1, xshift=-6cm]{Inicia modo gráfico};
+	\node(pr3)[process, below of=pr2, yshift=0.5cm]{Reseta variáveis};
+	\node(pr4)[process, below of=pr3, yshift=0.5cm]{Call \\ showMainScreen};
+	\node(pr17)[process, below of=pr4, yshift=0.5cm]{Volta ao inicio};
+	
+	\node(pr5)[process, below of=dec1, xshift=-2cm]{Verifica se o input é para Divis ou Divid};
+	\node(pr6)[process, below of=pr5, yshift=0.5cm]{Verifica se já possui um negativo};
+	\node(pr7)[process, below of=pr6, yshift=0.5cm]{Adiciona caso não exista};
+	\node(pr16)[process, below of=pr7, yshift=0.5cm]{Volta ao inicio};
+	
+	\node(pr8)[process, below of=dec1, xshift=2cm]{Verifica se o input é para Divis ou Divid};
+	\node(pr9)[process, below of=pr8, yshift=0.5cm]{Adiciona input ao respetivo array};
+	\node(pr10)[process, below of=pr9, yshift=0.5cm]{Imprime o input};
+	\node(pr18)[process, below of=pr10, yshift=0.5cm]{Volta ao inicio};
+	
+	\node(pr11)[process, below of=dec1, xshift=6cm]{Verifica se o input é para Divis ou Divid};
+	\node(pr12)[process, below of=pr11, yshift=0.5cm]{Imprime um backspace};
+	\node(pr13)[process, below of=pr12, yshift=0.5cm]{Imprime um espaço};
+	\node(pr14)[process, below of=pr13, yshift=0.5cm]{Imprime um backspace};
+	\node(pr19)[process, below of=pr14, yshift=0.5cm]{Volta ao inicio};
+	
+	\node(dec2)[decision, below of=dec1, yshift=-6cm, text width=15mm]{Ultimo Input?};
+	\node(pr15)[process, below of=dec2, xshift=2cm]{Imprime\\ próximo input};
+	\node(end)[startstop, below of=dec2, xshift=-2cm]{Executa\\ respetivo algoritmo};
+	
+	% Setas
+	\draw[arrow] (start) -- (pr1);
+	\draw[arrow] (pr1) -| (dec1);
+	\draw[arrow] (dec1) -- node[anchor=east]{Escape}(pr2);
+	\draw[arrow] (dec1) -- node[anchor=east]{Menos}(pr5);
+	\draw[arrow] (dec1) -- node[anchor=west]{0-9}(pr8);
+	\draw[arrow] (dec1) -- node[anchor=west]{Backspace}(pr11);
+	\draw[arrow] (dec1) -- node[anchor=south]{Enter}(6,-3.8) -- (dec2);
+	\draw[arrow] (pr2) -- (pr3);
+	\draw[arrow] (pr3) -- (pr4);
+	\draw[arrow] (pr4) -- (pr17);
+	\draw[arrow] (pr5) -- (pr6);
+	\draw[arrow] (pr6) -- (pr7);
+	\draw[arrow] (pr7) -- (pr16);
+	\draw[arrow] (pr8) -- (pr9);
+	\draw[arrow] (pr9) -- (pr10);
+	\draw[arrow] (pr10) -- (pr18);
+	\draw[arrow] (pr11) -- (pr12);
+	\draw[arrow] (pr12) -- (pr13);
+	\draw[arrow] (pr13) -- (pr14);
+	\draw[arrow] (pr14) -- (pr19);
+	\draw[arrow] (pr15) -- (pr19);
+	
+	\draw[arrow] (dec2) -- node[anchor=west]{Não}(pr15);
+	\draw[arrow] (dec2) -- node[anchor=east]{Sim}(end);
+	
 \end{tikzpicture}}
