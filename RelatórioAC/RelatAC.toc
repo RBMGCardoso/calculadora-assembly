@@ -9,12 +9,18 @@
 \contentsline {subsection}{\numberline {1.3.2}Visualização do input}{4}{}%
 \contentsline {subsection}{\numberline {1.3.3}Backspace}{4}{}%
 \contentsline {subsection}{\numberline {1.3.4}Negativo}{4}{}%
-\contentsline {chapter}{\numberline {2}Algoritmo da Divisão}{5}{}%
-\contentsline {section}{\numberline {2.1}Objetivo}{5}{}%
-\contentsline {section}{\numberline {2.2}Pseudocódigo}{5}{}%
-\contentsline {section}{\numberline {2.3}Fluxograma}{6}{}%
-\contentsline {chapter}{\numberline {3}Algoritmo da Raiz Quadrada}{7}{}%
-\contentsline {section}{\numberline {3.1}Objetivo}{7}{}%
-\contentsline {section}{\numberline {3.2}Pseudocódigo}{7}{}%
-\contentsline {section}{\numberline {3.3}Fluxograma}{8}{}%
-\contentsline {chapter}{\numberline {4}Problemas no desenvolvimento}{9}{}%
+\contentsline {section}{\numberline {1.4}Fluxograma}{5}{}%
+\contentsline {subsection}{\numberline {1.4.1}ShowMainScreen}{5}{}%
+\contentsline {subsection}{\numberline {1.4.2}WelcomeWindow}{5}{}%
+\contentsline {subsection}{\numberline {1.4.3}InsideSquareText}{5}{}%
+\contentsline {subsection}{\numberline {1.4.4}InsideSquareText}{5}{}%
+\contentsline {subsection}{\numberline {1.4.5}InsideSquareText}{5}{}%
+\contentsline {chapter}{\numberline {2}Algoritmo da Divisão}{6}{}%
+\contentsline {section}{\numberline {2.1}Objetivo}{6}{}%
+\contentsline {section}{\numberline {2.2}Pseudocódigo}{6}{}%
+\contentsline {section}{\numberline {2.3}Fluxograma}{7}{}%
+\contentsline {chapter}{\numberline {3}Algoritmo da Raiz Quadrada}{8}{}%
+\contentsline {section}{\numberline {3.1}Objetivo}{8}{}%
+\contentsline {section}{\numberline {3.2}Pseudocódigo}{8}{}%
+\contentsline {section}{\numberline {3.3}Fluxograma Geral}{9}{}%
+\contentsline {chapter}{\numberline {4}Problemas no desenvolvimento}{10}{}%

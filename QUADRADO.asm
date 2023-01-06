@@ -285,16 +285,7 @@ showMainScreen proc
     CALL insideSquareText   
     CALL desenhaQuadrados    
     CALL recebeMouseKeyboardInput
-    
-    ; Deteta qual numero foi pressionado, e verifica se está dentro dos valores possiveis
-    CMP input, 1
-    JE execute
-    
-    CMP input, 2
-    JE execute
-    
-    RET
-    execute:   
+ 
     CALL INPUTSCREEN         
 RET
 endp 

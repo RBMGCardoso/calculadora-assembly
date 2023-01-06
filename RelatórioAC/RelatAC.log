@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022/Arch Linux) (preloaded format=pdflatex 2022.12.23)  30 DEC 2022 01:30
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022/Arch Linux) (preloaded format=pdflatex 2022.12.23)  5 JAN 2023 17:53
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -535,57 +535,82 @@ Underfull \hbox (badness 10000) in paragraph at lines 48--49
 
  []
 
-) [4]
+
+Overfull \hbox (13.7635pt too wide) in paragraph at lines 76--77
+[] 
+ []
+
+[4]
+Overfull \hbox (13.7635pt too wide) in paragraph at lines 95--96
+[] 
+ []
+
+
+Overfull \hbox (10.68126pt too wide) in paragraph at lines 110--111
+[] 
+ []
+
+
+Overfull \hbox (10.68126pt too wide) in paragraph at lines 125--126
+[] 
+ []
+
+)
+Overfull \hbox (10.68126pt too wide) in paragraph at lines 141--47
+[] 
+ []
+
+[5]
 \openout2 = `ch-divis.aux'.
 
  (./ch-divis.tex
 Cap\'{\i }tulo 2.
-[5
+[6
 
 
 
 
 ]
 Missing character: There is no ; in font nullfont!
-) [6]
+) [7]
 \openout2 = `ch-raiz.aux'.
 
  (./ch-raiz.tex
 Cap\'{\i }tulo 3.
-[7
+[8
 
 
 
 
 ]
-Overfull \hbox (12.15175pt too wide) in paragraph at lines 94--95
+Overfull \hbox (12.15175pt too wide) in paragraph at lines 93--94
 [] 
  []
 
-) [8]
+) [9]
 \openout2 = `ch-final.aux'.
 
  (./ch-final.tex
 Cap\'{\i }tulo 4.
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <7> on input line 16.
-[9
+[10
 
 
 
 
-]) [10
+]) [11
 
 ] (./RelatAC.aux (./ch-resumo.aux) (./ch-gui.aux) (./ch-divis.aux)
 (./ch-raiz.aux) (./ch-final.aux)) ) 
 Here is how much of TeX's memory you used:
- 15387 strings out of 478238
- 314106 string characters out of 5850455
- 616496 words of memory out of 5000000
- 33344 multiletter control sequences out of 15000+600000
+ 15392 strings out of 478238
+ 314155 string characters out of 5850455
+ 616527 words of memory out of 5000000
+ 33347 multiletter control sequences out of 15000+600000
  486950 words of font info for 60 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 100i,9n,104p,588b,796s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 100i,9n,104p,588b,787s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texmf-dist/fonts/enc/dvips/cm-su
 per/cm-super-t1.enc}{/usr/share/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts
 1.enc}</usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/sh
@@ -610,10 +635,10 @@ pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm0800.pfb></usr/share
 ts/type1/public/cm-super/sfrm1000.pfb></usr/share/texmf-dist/fonts/type1/public
 /cm-super/sfrm1200.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm1
 440.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm1728.pfb>
-Output written on RelatAC.pdf (11 pages, 404161 bytes).
+Output written on RelatAC.pdf (12 pages, 414171 bytes).
 PDF statistics:
- 190 PDF objects out of 1000 (max. 8388607)
- 118 compressed objects within 2 object streams
+ 193 PDF objects out of 1000 (max. 8388607)
+ 120 compressed objects within 2 object streams
  0 named destinations out of 1000 (max. 500000)
  13 words of extra memory for PDF output out of 10000 (max. 10000000)
 

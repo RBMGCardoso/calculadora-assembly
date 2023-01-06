@@ -50,4 +50,92 @@ Para fazer esta verificação, basta confirmar que o tamanho do array do dividen
 É ainda necessário impedir a inserção de dois '\textbf{-}', para isto foi utilizada a flag implementada no algoritmo da divisão que indica se um número é negativo ou não. Considerando que o dividendo é o primeiro valor inserido, este só pode ter a flag a 1 ou 0, caso seja negativo ou não respetivamente. Logo se $flag = 1$ impedimos que o utilizador coloque outro '\textbf{-}', utilizando a mesma lógica para o divisor.
 
 
+\titleformat{\subsection}[block]
+{\normalfont\large\bfseries}{\thesubsection}{1em}{}
 
+\section{Fluxograma}
+\subsection{ShowMainScreen}
+\fbox{
+\begin{tikzpicture}[node distance=2cm]
+	% Nodos
+	\node (start) [startstop] {Inicio};
+	\node (pr1) [process, right of=start, xshift=2cm] {WelcomeWindow};
+	\node (pr2) [process, right of=pr1, xshift=2cm] {InsideSquareText};
+	\node (pr3) [process, right of=pr2, xshift=2cm] {DesenhaQuadrados};
+	\node (pr4) [process, below of=pr3] {RecebeMouse-KeyboardInput};
+	\node (pr5) [process, left of=pr4, xshift=-2cm] {InputScreen};
+	\node (end) [startstop, left of=pr5, xshift=-2cm] {Fim};
+	
+	% Setas
+	\draw [arrow] (start) -- (pr1) ;
+	\draw [arrow] (pr1) -- (pr2) ;
+	\draw [arrow] (pr2) -- (pr3) ;
+	\draw [arrow] (pr3) -- (pr4) ;
+	\draw [arrow] (pr4) -- (pr5) ;
+	\draw [arrow] (pr5) -- (end) ;
+\end{tikzpicture}}
+
+\subsection{WelcomeWindow}
+\fbox{
+	\begin{tikzpicture}[node distance=2cm]
+		% Nodos
+		\node (start) [startstop] {Inicio};
+		\node (pr1) [process, right of=start, xshift=2cm] {Adiciona linhas de formar a alinhar welcomeString ao centro da tela};
+		\node (pr2) [process, right of=pr1, xshift=2cm] {Imprime a welcome-String};
+		\node (pr3) [process, right of=pr2, xshift=2cm] {Adiciona 2 linhas};
+		\node (pr4) [process, below of=pr3] {Imprime a start-String};
+		\node (end) [startstop, left of=pr4, xshift=-2cm] {Fim};
+		
+		% Setas
+		\draw [arrow] (start) -- (pr1) ;
+		\draw [arrow] (pr1) -- (pr2) ;
+		\draw [arrow] (pr2) -- (pr3) ;
+		\draw [arrow] (pr3) -- (pr4) ;
+		\draw [arrow] (pr4) -- (end) ;
+\end{tikzpicture}}
+
+\subsection{InsideSquareText}
+\fbox{
+	\begin{tikzpicture}[node distance=2cm]
+		% Nodos
+		\node (start) [startstop] {Inicio};
+		\node (pr1) [process, right of=start, xshift=2cm] {Adiciona linhas de formar a alinhar buttonString á posição desejada};
+		\node (pr2) [process, right of=pr1, xshift=2cm] {Imprime a button-String};
+		\node (end) [startstop, right of=pr2, xshift=2cm] {Fim};
+		
+		% Setas
+		\draw [arrow] (start) -- (pr1) ;
+		\draw [arrow] (pr1) -- (pr2) ;
+		\draw [arrow] (pr2) -- (end) ;
+\end{tikzpicture}}
+
+\subsection{InsideSquareText}
+\fbox{
+	\begin{tikzpicture}[node distance=2cm]
+		% Nodos
+		\node (start) [startstop] {Inicio};
+		\node (pr1) [process, right of=start, xshift=2cm] {Adiciona linhas de formar a alinhar buttonString á posição desejada};
+		\node (pr2) [process, right of=pr1, xshift=2cm] {Imprime a button-String};
+		\node (end) [startstop, right of=pr2, xshift=2cm] {Fim};
+		
+		% Setas
+		\draw [arrow] (start) -- (pr1) ;
+		\draw [arrow] (pr1) -- (pr2) ;
+		\draw [arrow] (pr2) -- (end) ;
+\end{tikzpicture}}
+
+
+\subsection{InsideSquareText}
+\fbox{
+	\begin{tikzpicture}[node distance=2cm]
+		% Nodos
+		\node (start) [startstop] {Inicio};
+		\node (pr1) [process, right of=start, xshift=2cm] {Adiciona linhas de formar a alinhar buttonString á posição desejada};
+		\node (pr2) [process, right of=pr1, xshift=2cm] {Imprime a button-String};
+		\node (end) [startstop, right of=pr2, xshift=2cm] {Fim};
+		
+		% Setas
+		\draw [arrow] (start) -- (pr1) ;
+		\draw [arrow] (pr1) -- (pr2) ;
+		\draw [arrow] (pr2) -- (end) ;
+\end{tikzpicture}}
