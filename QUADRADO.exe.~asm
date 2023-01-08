@@ -46,7 +46,7 @@ QCOUNT DW -2
 NEGATIVO DW 0
 
 
-; Algoritmo da divisão
+; Algoritmo da raiz
 radicandoArray DB 10 dup(10)
 radicandoCount DW 0
 HIGHORDER1 DW 0
@@ -925,6 +925,7 @@ MOV CALCQUOCIENTERESTO, 0
 MOV INPUTDIGITDIVISOR, 0
 MOV QCOUNT, -2
 MOV NEGATIVO, 0
+MOV newDivisor, 0
 
 ; Variáveis da raiz
 MOV radicandoCount, 0
@@ -1259,4 +1260,4 @@ END MAIN
 
 
 
-; [SOURCE]: Z:\home\nuttell\Documentos\GitHub\calculadora-assembly\QUADRADO.asm
+; [SOURCE]: Z:\home\nuttell\Desktop\Aulas\Arquitetura\calculadora-assembly\QUADRADO.asm

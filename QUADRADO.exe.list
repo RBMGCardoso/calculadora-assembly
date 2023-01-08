@@ -2,7 +2,7 @@ EMU8086 GENERATED LISTING. MACHINE CODE <- SOURCE.
  
 QUADRADO.exe -- emu8086 assembler version: 4.08  
  
-[ 1/5/2023  --  5:40:18 PM ] 
+[ 1/8/2023  --  4:05:27 PM ] 
  
 ===================================================================================================
 [LINE]     LOC: MACHINE CODE                          SOURCE
@@ -67,7 +67,7 @@ QUADRADO.exe -- emu8086 assembler version: 4.08
 [  46]    00E9: 00 00                                 NEGATIVO DW 0
 [  47]        :                                       
 [  48]        :                                       
-[  49]        :                                       ; Algoritmo da divisão
+[  49]        :                                       ; Algoritmo da raiz
 [  50]    00EB: 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A         radicandoArray DB 10 dup(10)
 [  51]    00F5: 00 00                                 radicandoCount DW 0
 [  52]    00F7: 00 00                                 HIGHORDER1 DW 0
@@ -896,7 +896,7 @@ QUADRADO.exe -- emu8086 assembler version: 4.08
 [ 874]    0783: C7 06 AF 00 02 00                     MOV inputCounter, 2
 [ 875]    0789: E8 F8 FC                              CALL DRAWDIVISOR
 [ 876]    078C: E8 3B FD                              CALL KBHANDLER_INPUTSCREEN
-[ 877]    078F: E8 EB 00                              CALL DIVISAO
+[ 877]    078F: E8 F1 00                              CALL DIVISAO
 [ 878]    0792: E8 9C FE                              CALL RESULTADODIV
 [ 879]    0795: E8 28 FD                              CALL KBHANDLER_AFTEREXEC
 [ 880]    0798: EB 15                                 JMP finalExecucao
@@ -905,7 +905,7 @@ QUADRADO.exe -- emu8086 assembler version: 4.08
 [ 883]    079A: C7 06 AF 00 03 00                     MOV inputCounter, 3
 [ 884]    07A0: E8 09 FD                              CALL DRAWRADICANDO
 [ 885]    07A3: E8 24 FD                              CALL KBHANDLER_INPUTSCREEN
-[ 886]    07A6: E8 C8 01                              CALL SQRTALGORITMO
+[ 886]    07A6: E8 CE 01                              CALL SQRTALGORITMO
 [ 887]    07A9: E8 3D FF                              CALL MOSTRARESULTSQRT
 [ 888]    07AC: E8 11 FD                              CALL KBHANDLER_AFTEREXEC
 [ 889]        :                                       
@@ -947,338 +947,339 @@ QUADRADO.exe -- emu8086 assembler version: 4.08
 [ 925]    0828: C7 06 D9 00 00 00                     MOV INPUTDIGITDIVISOR, 0
 [ 926]    082E: C7 06 E7 00 FE FF                     MOV QCOUNT, -2
 [ 927]    0834: C7 06 E9 00 00 00                     MOV NEGATIVO, 0
-[ 928]        :                                       
-[ 929]        :                                       ; Variáveis da raiz
-[ 930]    083A: C7 06 F5 00 00 00                     MOV radicandoCount, 0
-[ 931]    0840: C7 06 F7 00 00 00                     MOV HIGHORDER1, 0
-[ 932]    0846: C7 06 F9 00 00 00                     MOV HIGHORDER2, 0
-[ 933]    084C: C7 06 FB 00 FF FF                     MOV I, -1
-[ 934]    0852: C7 06 FD 00 FF FF                     MOV J, -1
-[ 935]    0858: C7 06 FF 00 00 00                     MOV NALGARISMO, 0
-[ 936]    085E: C7 06 01 01 FF FF                     MOV NDIGITSHIGHORDER, -1
-[ 937]    0864: C7 06 03 01 FE FF                     MOV ARRAYPOSATUAL, -2
-[ 938]    086A: C7 06 05 01 00 00                     MOV RESULTFINAL, 0
-[ 939]    0870: C7 06 07 01 00 00                     MOV AUX, 0
-[ 940]    0876: C7 06 09 01 00 00                     MOV NDIGITOSRADICANDO, 0
-[ 941]    087C: C3                                    RET
-[ 942]        :                                       ENDP
-[ 943]        :                                       
-[ 944]        :                                       ;ALGORITMO DA DIVISAO
-[ 945]    087D:                                       DIVISAO PROC
-[ 946]    087D:                                       INICIO:
-[ 947]        :                                       ;OBTÉM O PRIMEIRO HIGH ORDER DO DIVIDENDO
-[ 948]    087D:                                       GETHIGHORDER:
-[ 949]    087D: 83 06 D3 00 01                        ADD ARRAYPOS, 1
-[ 950]    0882: 8B 1E D3 00                           MOV BX, ARRAYPOS
-[ 951]    0886: B4 00                                 MOV AH,0
-[ 952]    0888: 8A 87 B1 00                           MOV AL, DividArray[BX]
-[ 953]    088C: 3D 0A 00                              CMP AX, 10
-[ 954]    088F: 72 05                                 JB COMPARAHIGHORDER
-[ 955]    0891: 72 03 E9 DA 00                        JAE OVERFLOW
-[ 956]        :                                       
-[ 957]        :                                       ;COMPARA O HIGH ORDER COM O DIVISOR. SE O HIGH ORDER FOR MENOR DO QUE DIVISOR, PASSA PARA A LABEL "CONCATHIGHORDER". SE FOR MAIOR OU IGUAL PASSA PARA A LABEL "FLAG"
-[ 958]    0896:                                       COMPARAHIGHORDER:
-[ 959]    0896: A3 CB 00                              MOV HIGHORDER, AX
-[ 960]    0899: A3 CF 00                              MOV RESTO, AX
-[ 961]    089C: 3B 06 C5 00                           CMP AX, newDivisor
-[ 962]    08A0: 72 02                                 JB CONCATHIGHORDER
-[ 963]    08A2: 73 2C                                 JAE FLAG
-[ 964]        :                                       
-[ 965]        :                                       ;CONCATENA O HIGH ORDER SEGUINTE, CASO O DIVISOR SEJA MAIOR DO QUE O HIGH ORDER INICIAL
-[ 966]    08A4:                                       CONCATHIGHORDER:
-[ 967]        :                                       
-[ 968]        :                                       ;CERTIFICA-SE DE QUE A POSIÇÃO NO ARRAY A SEGUIR À ATUAL NÃO É 10, SENDO QUE 10 DETERMINA O FIM DO ARRAY
-[ 969]    08A4: 83 06 D3 00 01                        ADD ARRAYPOS, 1
-[ 970]    08A9: 8B 1E D3 00                           MOV BX, ARRAYPOS
-[ 971]    08AD: B5 00                                 MOV CH, 0
-[ 972]    08AF: 8A 8F B1 00                           MOV CL, DividArray[BX]
-[ 973]    08B3: 83 F9 0A                              CMP CX, 10
-[ 974]        :                                       ;SE A POSICAO A SEGUIR FOR 10, PASSA PARA A LABEL "FLAG", SENÃO PASSA PARA A LABEL "NEXT"
-[ 975]    08B6: 75 02                                 JNE NEXT
-[ 976]    08B8: 74 16                                 JE FLAG
-[ 977]        :                                       
-[ 978]    08BA:                                       NEXT:
-[ 979]    08BA: B9 0A 00                              MOV CX, 10
-[ 980]    08BD: BA 00 00                              MOV DX, 0
-[ 981]    08C0: F7 E1                                 MUL CX
-[ 982]    08C2: B5 00                                 MOV CH, 0
-[ 983]    08C4: 8A 8F B1 00                           MOV CL, DividArray[BX]
-[ 984]    08C8: 03 C1                                 ADD AX, CX
-[ 985]    08CA: A3 CB 00                              MOV HIGHORDER, AX
-[ 986]    08CD: A3 CF 00                              MOV RESTO, AX
-[ 987]        :                                       
-[ 988]    08D0:                                       FLAG:
-[ 989]        :                                       ;INICIALIZA IMULT A -1 PARA NÃO SER FEITA 1 ITERAÇÃO A MAIS DENTRO DE "QUOCIENTECALC"
-[ 990]    08D0: C7 06 CD 00 FF FF                     MOV IMULT, -1
-[ 991]        :                                       
-[ 992]        :                                       ;ITERA ATÉ ENCONTRAR UM VALOR PARA IMULT MAIOR DO QUE O RESTO. SE IMULT FOR IGUAL AO RESTO, PASSA PARA A LABEL "CALCOPERRESTO". QUANDO IMULT FOR MAIOR DO QUE O RESTO, SALTA PARA A LABEL "ITERANTERIOR"
-[ 993]    08D6:                                       QUOCIENTECAL:
-[ 994]    08D6: FF 06 CD 00                           INC IMULT
-[ 995]    08DA: 8B 0E CD 00                           MOV CX, IMULT
-[ 996]    08DE: A1 C5 00                              MOV AX, newDivisor
-[ 997]    08E1: BA 00 00                              MOV DX, 0
-[ 998]    08E4: F7 E1                                 MUL CX
-[ 999]    08E6: 3B 06 CF 00                           CMP AX, RESTO
-[1000]    08EA: 72 EA                                 JB QUOCIENTECAL
-[1001]    08EC: 74 04                                 JE CALCOPERRESTO
-[1002]        :                                       
-[1003]        :                                       ;ITERA O VALOR DE IMULT ANTERIOR QUE RESPEITE A CONDIÇÃO IMULT * DIVISOR < RESTO
-[1004]    08EE:                                       ITERANTERIOR:
-[1005]    08EE: FF 0E CD 00                           DEC IMULT
-[1006]        :                                       
-[1007]        :                                       ;CALCULA O VALOR QUE VAI SER SUBTRAIDO PELO RESTO
-[1008]    08F2:                                       CALCOPERRESTO:
-[1009]    08F2: A1 CD 00                              MOV AX, IMULT
-[1010]    08F5: F7 26 C5 00                           MUL newDivisor
-[1011]    08F9: 8B 1E CF 00                           MOV BX, RESTO
-[1012]    08FD: A3 D7 00                              MOV CALCQUOCIENTERESTO, AX
-[1013]        :                                       
-[1014]        :                                       ;EFETUA A OPERAÇÃO RESTO - CALCQUOCIENTERESTO
-[1015]    0900:                                       OPERACAORESTO:
-[1016]    0900: A1 CF 00                              MOV AX, RESTO
-[1017]    0903: 2B 06 D7 00                           SUB AX, CALCQUOCIENTERESTO
-[1018]    0907: A3 CF 00                              MOV RESTO, AX
-[1019]        :                                       
-[1020]        :                                       ;ESTRUTURA DE CONTROLO DO QUOCIENTE
-[1021]    090A:                                       CALCQUOCIENTE2:
-[1022]        :                                       ;CERTIFICA-SE DE QUE A POSIÇÃO NO ARRAY A SEGUIR À ATUAL NÃO É 10, SENDO QUE 10 DETERMINA O FIM DO ARRAY
-[1023]    090A: 8B 1E D3 00                           MOV BX, ARRAYPOS
-[1024]    090E: 83 C3 01                              ADD BX,1
-[1025]    0911: 80 BF B1 00 0A                        CMP DividArray[BX], 10
-[1026]        :                                       ;SE A POSICAO A SEGUIR FOR 10, PASSA PARA A LABEL "CONCATQUOCIENTE", SENÃO PASSA PARA A LABEL "FLAG2"
-[1027]    0916: 75 02                                 JNE FLAG2
-[1028]    0918: 74 2A                                 JE  CONCATQUOCIENTE
-[1029]        :                                       
-[1030]    091A:                                       FLAG2:
-[1031]    091A: BA 00 00                              MOV DX, 0
-[1032]    091D: A1 CF 00                              MOV AX, RESTO
-[1033]    0920: BB 0A 00                              MOV BX, 10
-[1034]    0923: F7 E3                                 MUL BX
-[1035]    0925: A3 CF 00                              MOV RESTO, AX
-[1036]        :                                       
-[1037]        :                                       ;CERTIFICA-SE DE QUE A POSIÇÃO NO ARRAY A SEGUIR À ATUAL NÃO É 10, SENDO QUE 10 DETERMINA O FIM DO ARRAY
-[1038]    0928: 8B 1E D3 00                           MOV BX, ARRAYPOS
-[1039]    092C: 83 C3 01                              ADD BX,1
-[1040]    092F: 80 BF B1 00 0A                        CMP DividArray[BX], 10
-[1041]        :                                       ;SE A POSICAO A SEGUIR NÃO FOR 10, PASSA PARA A LABEL "CONCATRESTO"
-[1042]    0934: 75 00                                 JNE CONCATRESTO
-[1043]        :                                       
-[1044]        :                                       ;CONCATENA O VALOR CALCULADO ANTERIORMENTE AO RESTO
-[1045]    0936:                                       CONCATRESTO:
-[1046]    0936: A1 CF 00                              MOV AX, RESTO
-[1047]    0939: B5 00                                 MOV CH, 0
-[1048]    093B: 8A 8F B1 00                           MOV CL, DividArray[BX]
-[1049]    093F: 03 C1                                 ADD AX, CX
-[1050]    0941: A3 CF 00                              MOV RESTO, AX
-[1051]        :                                       
-[1052]        :                                       ;CONCATENA O VALOR CALCULADO ANTERIORMENTE AO QUOCIENTE
-[1053]    0944:                                       CONCATQUOCIENTE:
-[1054]    0944: B8 0A 00                              MOV AX, 10
-[1055]    0947: F7 26 D1 00                           MUL QUOCIENTE
-[1056]    094B: 03 06 CD 00                           ADD AX, IMULT
-[1057]    094F: A3 D1 00                              MOV QUOCIENTE, AX
-[1058]        :                                       
-[1059]        :                                       ;VERIFICA SE A POSICAO ATUAL É A ULTIMA POSICAO DO ARRAY
-[1060]    0952:                                       CONDICAOJUMP:
-[1061]    0952: C7 06 CD 00 FF FF                     MOV IMULT, -1
-[1062]    0958: 8B 1E D3 00                           MOV BX, ARRAYPOS
-[1063]    095C: 83 C3 01                              ADD BX,1
-[1064]    095F: 83 06 D3 00 01                        ADD ARRAYPOS,1
-[1065]    0964: 80 BF B1 00 0A                        CMP DividArray[BX], 10
-[1066]    0969: 74 03 E9 68 FF                        JNE QUOCIENTECAL
-[1067]    096E: 74 00                                 JE  OVERFLOW
-[1068]    0970:                                       OVERFLOW:
-[1069]    0970: C3                                    RET
-[1070]        :                                       ENDP
-[1071]        :                                       
-[1072]        :                                       ;ALGORITMO DA RAIZ QUADRADA
-[1073]    0971:                                       SQRTALGORITMO PROC
-[1074]    0971:                                       NDIGITOS: ;DEVOLVE O NÚMERO DE ALGARISMO DO RADICANDO
-[1075]    0971: 83 06 D3 00 01                        ADD ARRAYPOS, 1
-[1076]    0976: FF 06 FF 00                           INC NALGARISMO
-[1077]    097A: 8B 1E D3 00                           MOV BX, ARRAYPOS
-[1078]    097E: B4 00                                 MOV AH, 0
-[1079]    0980: 8A 87 EB 00                           MOV AL, radicandoArray[BX]
-[1080]    0984: 8B 0E D3 00                           MOV CX, ARRAYPOS
-[1081]    0988: 83 C1 01                              ADD CX, 1
-[1082]    098B: 8B D9                                 MOV BX, CX
-[1083]    098D: B5 00                                 MOV CH, 0
-[1084]    098F: 8A 8F EB 00                           MOV CL, radicandoArray[BX]
-[1085]    0993: 83 F9 0A                              CMP CX, 10
-[1086]    0996: 74 02                                 JE ISEVEN
-[1087]    0998: 75 D7                                 JNE NDIGITOS
-[1088]        :                                       
-[1089]    099A:                                       ISEVEN: ;VERIFICA SE O NUMERO DE DIGITOS É PAR
-[1090]    099A: BA 00 00                              MOV DX,0
-[1091]    099D: BB 02 00                              MOV BX, 2
-[1092]    09A0: A1 FF 00                              MOV AX, NALGARISMO
-[1093]    09A3: F7 F3                                 DIV BX
-[1094]    09A5: 83 FA 00                              CMP DX, 0
-[1095]    09A8: 75 02                                 JNE GETHIGHORDERPAIRIFNOTEVEN
-[1096]    09AA: 74 18                                 JE  GETHIGHORDERPAIRIFEVEN
-[1097]        :                                       
-[1098]    09AC:                                       GETHIGHORDERPAIRIFNOTEVEN:  ;OBTEM O HIGH ORDER SE NALGARISMO FOR IMPAR
-[1099]    09AC: 83 06 03 01 01                        ADD ARRAYPOSATUAL, 1
-[1100]    09B1: 8B 1E 03 01                           MOV BX, ARRAYPOSATUAL
-[1101]    09B5: B4 00                                 MOV AH, 0
-[1102]    09B7: 8A 87 EB 00                           MOV AL, radicandoArray[BX]
-[1103]    09BB: A3 F7 00                              MOV HIGHORDER1, AX
-[1104]    09BE: FF 0E FF 00                           DEC NALGARISMO
-[1105]    09C2: EB 2A                                 JMP ITERACAO1
-[1106]        :                                       
-[1107]    09C4:                                       GETHIGHORDERPAIRIFEVEN:   ;OBTEM O HIGH ORDER SE NALGARISMO FOR PAR
-[1108]    09C4: 83 06 03 01 01                        ADD ARRAYPOSATUAL, 1
-[1109]    09C9: 8B 1E 03 01                           MOV BX, ARRAYPOSATUAL
-[1110]    09CD: B4 00                                 MOV AH, 0
-[1111]    09CF: 8A 87 EB 00                           MOV AL, radicandoArray[BX]
-[1112]    09D3: B9 0A 00                              MOV CX, 10
-[1113]    09D6: F7 E1                                 MUL CX
-[1114]    09D8: 8B 1E 03 01                           MOV BX, ARRAYPOSATUAL
-[1115]    09DC: 83 C3 01                              ADD BX, 1
-[1116]    09DF: 89 1E 03 01                           MOV ARRAYPOSATUAL, BX
-[1117]    09E3: B5 00                                 MOV CH, 0
-[1118]    09E5: 8A 8F EB 00                           MOV CL, radicandoArray[BX]
-[1119]    09E9: 03 C1                                 ADD AX, CX
-[1120]    09EB: A3 F7 00                              MOV HIGHORDER1, AX
-[1121]        :                                       
-[1122]    09EE:                                       ITERACAO1: ;DESCOBRE QUAL O VALOR DE I QUE É MAIOR DO QUE O VALOR DO HIGHORDER1
-[1123]    09EE: FF 06 FB 00                           INC I
-[1124]    09F2: A1 FB 00                              MOV AX,I
-[1125]    09F5: F7 E0                                 MUL AX
-[1126]    09F7: 3B 06 F7 00                           CMP AX, HIGHORDER1
-[1127]    09FB: 77 02                                 JA DECREMENT
-[1128]    09FD: 76 EF                                 JBE ITERACAO1
-[1129]        :                                       
-[1130]    09FF:                                       DECREMENT: ;DECREMENTA I PARA UTILIZARMOS O VALOR CORRETO
-[1131]    09FF: FF 0E FB 00                           DEC I
-[1132]        :                                       
-[1133]    0A03:                                       SUBTRACAO:  ;SUBTRAI O HIGHORDER AO VALOR GUARDADO EM AX MULTIPLICADO POR I
-[1134]    0A03: A1 03 01                              MOV AX, ARRAYPOSATUAL
-[1135]    0A06: 05 01 00                              ADD AX, 1
-[1136]    0A09: 8B D8                                 MOV BX,AX
-[1137]    0A0B: 80 BF EB 00 0A                        CMP radicandoArray[BX], 10
-[1138]    0A10: 75 03 E9 D3 00                        JE FINALRESULT1
-[1139]        :                                       
-[1140]    0A15: A1 FB 00                              MOV AX, I
-[1141]    0A18: F7 E0                                 MUL AX
-[1142]    0A1A: 29 06 F7 00                           SUB HIGHORDER1, AX
-[1143]        :                                       
-[1144]    0A1E:                                       GETNEXTHIGHORDERPAIR:   ;OBTEM O HIGH ORDER SE NALGARISMO FOR PAR
-[1145]    0A1E: 83 06 03 01 01                        ADD ARRAYPOSATUAL, 1
-[1146]    0A23: 8B 1E 03 01                           MOV BX, ARRAYPOSATUAL
-[1147]    0A27: B4 00                                 MOV AH, 0
-[1148]    0A29: 8A 87 EB 00                           MOV AL, radicandoArray[BX]
-[1149]    0A2D: B9 0A 00                              MOV CX, 10
-[1150]    0A30: F7 E1                                 MUL CX
-[1151]    0A32: 8B 1E 03 01                           MOV BX, ARRAYPOSATUAL
-[1152]    0A36: 83 C3 01                              ADD BX, 1
-[1153]    0A39: 89 1E 03 01                           MOV ARRAYPOSATUAL, BX
-[1154]    0A3D: B5 00                                 MOV CH, 0
-[1155]    0A3F: 8A 8F EB 00                           MOV CL, radicandoArray[BX]
-[1156]    0A43: 03 C1                                 ADD AX, CX
-[1157]    0A45: A3 F9 00                              MOV HIGHORDER2, AX
-[1158]        :                                       
+[ 928]    083A: C7 06 C5 00 00 00                     MOV newDivisor, 0
+[ 929]        :                                       
+[ 930]        :                                       ; Variáveis da raiz
+[ 931]    0840: C7 06 F5 00 00 00                     MOV radicandoCount, 0
+[ 932]    0846: C7 06 F7 00 00 00                     MOV HIGHORDER1, 0
+[ 933]    084C: C7 06 F9 00 00 00                     MOV HIGHORDER2, 0
+[ 934]    0852: C7 06 FB 00 FF FF                     MOV I, -1
+[ 935]    0858: C7 06 FD 00 FF FF                     MOV J, -1
+[ 936]    085E: C7 06 FF 00 00 00                     MOV NALGARISMO, 0
+[ 937]    0864: C7 06 01 01 FF FF                     MOV NDIGITSHIGHORDER, -1
+[ 938]    086A: C7 06 03 01 FE FF                     MOV ARRAYPOSATUAL, -2
+[ 939]    0870: C7 06 05 01 00 00                     MOV RESULTFINAL, 0
+[ 940]    0876: C7 06 07 01 00 00                     MOV AUX, 0
+[ 941]    087C: C7 06 09 01 00 00                     MOV NDIGITOSRADICANDO, 0
+[ 942]    0882: C3                                    RET
+[ 943]        :                                       ENDP
+[ 944]        :                                       
+[ 945]        :                                       ;ALGORITMO DA DIVISAO
+[ 946]    0883:                                       DIVISAO PROC
+[ 947]    0883:                                       INICIO:
+[ 948]        :                                       ;OBTÉM O PRIMEIRO HIGH ORDER DO DIVIDENDO
+[ 949]    0883:                                       GETHIGHORDER:
+[ 950]    0883: 83 06 D3 00 01                        ADD ARRAYPOS, 1
+[ 951]    0888: 8B 1E D3 00                           MOV BX, ARRAYPOS
+[ 952]    088C: B4 00                                 MOV AH,0
+[ 953]    088E: 8A 87 B1 00                           MOV AL, DividArray[BX]
+[ 954]    0892: 3D 0A 00                              CMP AX, 10
+[ 955]    0895: 72 05                                 JB COMPARAHIGHORDER
+[ 956]    0897: 72 03 E9 DA 00                        JAE OVERFLOW
+[ 957]        :                                       
+[ 958]        :                                       ;COMPARA O HIGH ORDER COM O DIVISOR. SE O HIGH ORDER FOR MENOR DO QUE DIVISOR, PASSA PARA A LABEL "CONCATHIGHORDER". SE FOR MAIOR OU IGUAL PASSA PARA A LABEL "FLAG"
+[ 959]    089C:                                       COMPARAHIGHORDER:
+[ 960]    089C: A3 CB 00                              MOV HIGHORDER, AX
+[ 961]    089F: A3 CF 00                              MOV RESTO, AX
+[ 962]    08A2: 3B 06 C5 00                           CMP AX, newDivisor
+[ 963]    08A6: 72 02                                 JB CONCATHIGHORDER
+[ 964]    08A8: 73 2C                                 JAE FLAG
+[ 965]        :                                       
+[ 966]        :                                       ;CONCATENA O HIGH ORDER SEGUINTE, CASO O DIVISOR SEJA MAIOR DO QUE O HIGH ORDER INICIAL
+[ 967]    08AA:                                       CONCATHIGHORDER:
+[ 968]        :                                       
+[ 969]        :                                       ;CERTIFICA-SE DE QUE A POSIÇÃO NO ARRAY A SEGUIR À ATUAL NÃO É 10, SENDO QUE 10 DETERMINA O FIM DO ARRAY
+[ 970]    08AA: 83 06 D3 00 01                        ADD ARRAYPOS, 1
+[ 971]    08AF: 8B 1E D3 00                           MOV BX, ARRAYPOS
+[ 972]    08B3: B5 00                                 MOV CH, 0
+[ 973]    08B5: 8A 8F B1 00                           MOV CL, DividArray[BX]
+[ 974]    08B9: 83 F9 0A                              CMP CX, 10
+[ 975]        :                                       ;SE A POSICAO A SEGUIR FOR 10, PASSA PARA A LABEL "FLAG", SENÃO PASSA PARA A LABEL "NEXT"
+[ 976]    08BC: 75 02                                 JNE NEXT
+[ 977]    08BE: 74 16                                 JE FLAG
+[ 978]        :                                       
+[ 979]    08C0:                                       NEXT:
+[ 980]    08C0: B9 0A 00                              MOV CX, 10
+[ 981]    08C3: BA 00 00                              MOV DX, 0
+[ 982]    08C6: F7 E1                                 MUL CX
+[ 983]    08C8: B5 00                                 MOV CH, 0
+[ 984]    08CA: 8A 8F B1 00                           MOV CL, DividArray[BX]
+[ 985]    08CE: 03 C1                                 ADD AX, CX
+[ 986]    08D0: A3 CB 00                              MOV HIGHORDER, AX
+[ 987]    08D3: A3 CF 00                              MOV RESTO, AX
+[ 988]        :                                       
+[ 989]    08D6:                                       FLAG:
+[ 990]        :                                       ;INICIALIZA IMULT A -1 PARA NÃO SER FEITA 1 ITERAÇÃO A MAIS DENTRO DE "QUOCIENTECALC"
+[ 991]    08D6: C7 06 CD 00 FF FF                     MOV IMULT, -1
+[ 992]        :                                       
+[ 993]        :                                       ;ITERA ATÉ ENCONTRAR UM VALOR PARA IMULT MAIOR DO QUE O RESTO. SE IMULT FOR IGUAL AO RESTO, PASSA PARA A LABEL "CALCOPERRESTO". QUANDO IMULT FOR MAIOR DO QUE O RESTO, SALTA PARA A LABEL "ITERANTERIOR"
+[ 994]    08DC:                                       QUOCIENTECAL:
+[ 995]    08DC: FF 06 CD 00                           INC IMULT
+[ 996]    08E0: 8B 0E CD 00                           MOV CX, IMULT
+[ 997]    08E4: A1 C5 00                              MOV AX, newDivisor
+[ 998]    08E7: BA 00 00                              MOV DX, 0
+[ 999]    08EA: F7 E1                                 MUL CX
+[1000]    08EC: 3B 06 CF 00                           CMP AX, RESTO
+[1001]    08F0: 72 EA                                 JB QUOCIENTECAL
+[1002]    08F2: 74 04                                 JE CALCOPERRESTO
+[1003]        :                                       
+[1004]        :                                       ;ITERA O VALOR DE IMULT ANTERIOR QUE RESPEITE A CONDIÇÃO IMULT * DIVISOR < RESTO
+[1005]    08F4:                                       ITERANTERIOR:
+[1006]    08F4: FF 0E CD 00                           DEC IMULT
+[1007]        :                                       
+[1008]        :                                       ;CALCULA O VALOR QUE VAI SER SUBTRAIDO PELO RESTO
+[1009]    08F8:                                       CALCOPERRESTO:
+[1010]    08F8: A1 CD 00                              MOV AX, IMULT
+[1011]    08FB: F7 26 C5 00                           MUL newDivisor
+[1012]    08FF: 8B 1E CF 00                           MOV BX, RESTO
+[1013]    0903: A3 D7 00                              MOV CALCQUOCIENTERESTO, AX
+[1014]        :                                       
+[1015]        :                                       ;EFETUA A OPERAÇÃO RESTO - CALCQUOCIENTERESTO
+[1016]    0906:                                       OPERACAORESTO:
+[1017]    0906: A1 CF 00                              MOV AX, RESTO
+[1018]    0909: 2B 06 D7 00                           SUB AX, CALCQUOCIENTERESTO
+[1019]    090D: A3 CF 00                              MOV RESTO, AX
+[1020]        :                                       
+[1021]        :                                       ;ESTRUTURA DE CONTROLO DO QUOCIENTE
+[1022]    0910:                                       CALCQUOCIENTE2:
+[1023]        :                                       ;CERTIFICA-SE DE QUE A POSIÇÃO NO ARRAY A SEGUIR À ATUAL NÃO É 10, SENDO QUE 10 DETERMINA O FIM DO ARRAY
+[1024]    0910: 8B 1E D3 00                           MOV BX, ARRAYPOS
+[1025]    0914: 83 C3 01                              ADD BX,1
+[1026]    0917: 80 BF B1 00 0A                        CMP DividArray[BX], 10
+[1027]        :                                       ;SE A POSICAO A SEGUIR FOR 10, PASSA PARA A LABEL "CONCATQUOCIENTE", SENÃO PASSA PARA A LABEL "FLAG2"
+[1028]    091C: 75 02                                 JNE FLAG2
+[1029]    091E: 74 2A                                 JE  CONCATQUOCIENTE
+[1030]        :                                       
+[1031]    0920:                                       FLAG2:
+[1032]    0920: BA 00 00                              MOV DX, 0
+[1033]    0923: A1 CF 00                              MOV AX, RESTO
+[1034]    0926: BB 0A 00                              MOV BX, 10
+[1035]    0929: F7 E3                                 MUL BX
+[1036]    092B: A3 CF 00                              MOV RESTO, AX
+[1037]        :                                       
+[1038]        :                                       ;CERTIFICA-SE DE QUE A POSIÇÃO NO ARRAY A SEGUIR À ATUAL NÃO É 10, SENDO QUE 10 DETERMINA O FIM DO ARRAY
+[1039]    092E: 8B 1E D3 00                           MOV BX, ARRAYPOS
+[1040]    0932: 83 C3 01                              ADD BX,1
+[1041]    0935: 80 BF B1 00 0A                        CMP DividArray[BX], 10
+[1042]        :                                       ;SE A POSICAO A SEGUIR NÃO FOR 10, PASSA PARA A LABEL "CONCATRESTO"
+[1043]    093A: 75 00                                 JNE CONCATRESTO
+[1044]        :                                       
+[1045]        :                                       ;CONCATENA O VALOR CALCULADO ANTERIORMENTE AO RESTO
+[1046]    093C:                                       CONCATRESTO:
+[1047]    093C: A1 CF 00                              MOV AX, RESTO
+[1048]    093F: B5 00                                 MOV CH, 0
+[1049]    0941: 8A 8F B1 00                           MOV CL, DividArray[BX]
+[1050]    0945: 03 C1                                 ADD AX, CX
+[1051]    0947: A3 CF 00                              MOV RESTO, AX
+[1052]        :                                       
+[1053]        :                                       ;CONCATENA O VALOR CALCULADO ANTERIORMENTE AO QUOCIENTE
+[1054]    094A:                                       CONCATQUOCIENTE:
+[1055]    094A: B8 0A 00                              MOV AX, 10
+[1056]    094D: F7 26 D1 00                           MUL QUOCIENTE
+[1057]    0951: 03 06 CD 00                           ADD AX, IMULT
+[1058]    0955: A3 D1 00                              MOV QUOCIENTE, AX
+[1059]        :                                       
+[1060]        :                                       ;VERIFICA SE A POSICAO ATUAL É A ULTIMA POSICAO DO ARRAY
+[1061]    0958:                                       CONDICAOJUMP:
+[1062]    0958: C7 06 CD 00 FF FF                     MOV IMULT, -1
+[1063]    095E: 8B 1E D3 00                           MOV BX, ARRAYPOS
+[1064]    0962: 83 C3 01                              ADD BX,1
+[1065]    0965: 83 06 D3 00 01                        ADD ARRAYPOS,1
+[1066]    096A: 80 BF B1 00 0A                        CMP DividArray[BX], 10
+[1067]    096F: 74 03 E9 68 FF                        JNE QUOCIENTECAL
+[1068]    0974: 74 00                                 JE  OVERFLOW
+[1069]    0976:                                       OVERFLOW:
+[1070]    0976: C3                                    RET
+[1071]        :                                       ENDP
+[1072]        :                                       
+[1073]        :                                       ;ALGORITMO DA RAIZ QUADRADA
+[1074]    0977:                                       SQRTALGORITMO PROC
+[1075]    0977:                                       NDIGITOS: ;DEVOLVE O NÚMERO DE ALGARISMO DO RADICANDO
+[1076]    0977: 83 06 D3 00 01                        ADD ARRAYPOS, 1
+[1077]    097C: FF 06 FF 00                           INC NALGARISMO
+[1078]    0980: 8B 1E D3 00                           MOV BX, ARRAYPOS
+[1079]    0984: B4 00                                 MOV AH, 0
+[1080]    0986: 8A 87 EB 00                           MOV AL, radicandoArray[BX]
+[1081]    098A: 8B 0E D3 00                           MOV CX, ARRAYPOS
+[1082]    098E: 83 C1 01                              ADD CX, 1
+[1083]    0991: 8B D9                                 MOV BX, CX
+[1084]    0993: B5 00                                 MOV CH, 0
+[1085]    0995: 8A 8F EB 00                           MOV CL, radicandoArray[BX]
+[1086]    0999: 83 F9 0A                              CMP CX, 10
+[1087]    099C: 74 02                                 JE ISEVEN
+[1088]    099E: 75 D7                                 JNE NDIGITOS
+[1089]        :                                       
+[1090]    09A0:                                       ISEVEN: ;VERIFICA SE O NUMERO DE DIGITOS É PAR
+[1091]    09A0: BA 00 00                              MOV DX,0
+[1092]    09A3: BB 02 00                              MOV BX, 2
+[1093]    09A6: A1 FF 00                              MOV AX, NALGARISMO
+[1094]    09A9: F7 F3                                 DIV BX
+[1095]    09AB: 83 FA 00                              CMP DX, 0
+[1096]    09AE: 75 02                                 JNE GETHIGHORDERPAIRIFNOTEVEN
+[1097]    09B0: 74 18                                 JE  GETHIGHORDERPAIRIFEVEN
+[1098]        :                                       
+[1099]    09B2:                                       GETHIGHORDERPAIRIFNOTEVEN:  ;OBTEM O HIGH ORDER SE NALGARISMO FOR IMPAR
+[1100]    09B2: 83 06 03 01 01                        ADD ARRAYPOSATUAL, 1
+[1101]    09B7: 8B 1E 03 01                           MOV BX, ARRAYPOSATUAL
+[1102]    09BB: B4 00                                 MOV AH, 0
+[1103]    09BD: 8A 87 EB 00                           MOV AL, radicandoArray[BX]
+[1104]    09C1: A3 F7 00                              MOV HIGHORDER1, AX
+[1105]    09C4: FF 0E FF 00                           DEC NALGARISMO
+[1106]    09C8: EB 2A                                 JMP ITERACAO1
+[1107]        :                                       
+[1108]    09CA:                                       GETHIGHORDERPAIRIFEVEN:   ;OBTEM O HIGH ORDER SE NALGARISMO FOR PAR
+[1109]    09CA: 83 06 03 01 01                        ADD ARRAYPOSATUAL, 1
+[1110]    09CF: 8B 1E 03 01                           MOV BX, ARRAYPOSATUAL
+[1111]    09D3: B4 00                                 MOV AH, 0
+[1112]    09D5: 8A 87 EB 00                           MOV AL, radicandoArray[BX]
+[1113]    09D9: B9 0A 00                              MOV CX, 10
+[1114]    09DC: F7 E1                                 MUL CX
+[1115]    09DE: 8B 1E 03 01                           MOV BX, ARRAYPOSATUAL
+[1116]    09E2: 83 C3 01                              ADD BX, 1
+[1117]    09E5: 89 1E 03 01                           MOV ARRAYPOSATUAL, BX
+[1118]    09E9: B5 00                                 MOV CH, 0
+[1119]    09EB: 8A 8F EB 00                           MOV CL, radicandoArray[BX]
+[1120]    09EF: 03 C1                                 ADD AX, CX
+[1121]    09F1: A3 F7 00                              MOV HIGHORDER1, AX
+[1122]        :                                       
+[1123]    09F4:                                       ITERACAO1: ;DESCOBRE QUAL O VALOR DE I QUE É MAIOR DO QUE O VALOR DO HIGHORDER1
+[1124]    09F4: FF 06 FB 00                           INC I
+[1125]    09F8: A1 FB 00                              MOV AX,I
+[1126]    09FB: F7 E0                                 MUL AX
+[1127]    09FD: 3B 06 F7 00                           CMP AX, HIGHORDER1
+[1128]    0A01: 77 02                                 JA DECREMENT
+[1129]    0A03: 76 EF                                 JBE ITERACAO1
+[1130]        :                                       
+[1131]    0A05:                                       DECREMENT: ;DECREMENTA I PARA UTILIZARMOS O VALOR CORRETO
+[1132]    0A05: FF 0E FB 00                           DEC I
+[1133]        :                                       
+[1134]    0A09:                                       SUBTRACAO:  ;SUBTRAI O HIGHORDER AO VALOR GUARDADO EM AX MULTIPLICADO POR I
+[1135]    0A09: A1 03 01                              MOV AX, ARRAYPOSATUAL
+[1136]    0A0C: 05 01 00                              ADD AX, 1
+[1137]    0A0F: 8B D8                                 MOV BX,AX
+[1138]    0A11: 80 BF EB 00 0A                        CMP radicandoArray[BX], 10
+[1139]    0A16: 75 03 E9 D3 00                        JE FINALRESULT1
+[1140]        :                                       
+[1141]    0A1B: A1 FB 00                              MOV AX, I
+[1142]    0A1E: F7 E0                                 MUL AX
+[1143]    0A20: 29 06 F7 00                           SUB HIGHORDER1, AX
+[1144]        :                                       
+[1145]    0A24:                                       GETNEXTHIGHORDERPAIR:   ;OBTEM O HIGH ORDER SE NALGARISMO FOR PAR
+[1146]    0A24: 83 06 03 01 01                        ADD ARRAYPOSATUAL, 1
+[1147]    0A29: 8B 1E 03 01                           MOV BX, ARRAYPOSATUAL
+[1148]    0A2D: B4 00                                 MOV AH, 0
+[1149]    0A2F: 8A 87 EB 00                           MOV AL, radicandoArray[BX]
+[1150]    0A33: B9 0A 00                              MOV CX, 10
+[1151]    0A36: F7 E1                                 MUL CX
+[1152]    0A38: 8B 1E 03 01                           MOV BX, ARRAYPOSATUAL
+[1153]    0A3C: 83 C3 01                              ADD BX, 1
+[1154]    0A3F: 89 1E 03 01                           MOV ARRAYPOSATUAL, BX
+[1155]    0A43: B5 00                                 MOV CH, 0
+[1156]    0A45: 8A 8F EB 00                           MOV CL, radicandoArray[BX]
+[1157]    0A49: 03 C1                                 ADD AX, CX
+[1158]    0A4B: A3 F9 00                              MOV HIGHORDER2, AX
 [1159]        :                                       
-[1160]    0A48: A1 F9 00                              MOV AX, HIGHORDER2
-[1161]    0A4B:                                       GETHIGHORDERNDIGITS: ;OBTEM O NUMERO DE DIGITOS DO HIGHORDER
-[1162]    0A4B: BA 00 00                              MOV DX, 0
-[1163]    0A4E: FF 06 01 01                           INC NDIGITSHIGHORDER
-[1164]    0A52: BB 0A 00                              MOV BX, 10
-[1165]    0A55: F7 F3                                 DIV BX
-[1166]    0A57: 3D 00 00                              CMP AX, 0
-[1167]    0A5A: 75 EF                                 JNE GETHIGHORDERNDIGITS
-[1168]        :                                       
-[1169]    0A5C:                                       ELEVADO: ;VERIFICA QUAL É A POTENCIA DE 10 MAIS ADEQUADA PARA O PASSO SEGUINTE
-[1170]    0A5C: B8 0A 00                              MOV AX, 10
-[1171]    0A5F: F7 E0                                 MUL AX
-[1172]    0A61: 8B 0E 01 01                           MOV CX, NDIGITSHIGHORDER
-[1173]    0A65: FF 0E 01 01                           DEC NDIGITSHIGHORDER
-[1174]    0A69: 83 F9 00                              CMP CX, 0
-[1175]    0A6C: 75 EE                                 JNE ELEVADO
-[1176]        :                                       
+[1160]        :                                       
+[1161]    0A4E: A1 F9 00                              MOV AX, HIGHORDER2
+[1162]    0A51:                                       GETHIGHORDERNDIGITS: ;OBTEM O NUMERO DE DIGITOS DO HIGHORDER
+[1163]    0A51: BA 00 00                              MOV DX, 0
+[1164]    0A54: FF 06 01 01                           INC NDIGITSHIGHORDER
+[1165]    0A58: BB 0A 00                              MOV BX, 10
+[1166]    0A5B: F7 F3                                 DIV BX
+[1167]    0A5D: 3D 00 00                              CMP AX, 0
+[1168]    0A60: 75 EF                                 JNE GETHIGHORDERNDIGITS
+[1169]        :                                       
+[1170]    0A62:                                       ELEVADO: ;VERIFICA QUAL É A POTENCIA DE 10 MAIS ADEQUADA PARA O PASSO SEGUINTE
+[1171]    0A62: B8 0A 00                              MOV AX, 10
+[1172]    0A65: F7 E0                                 MUL AX
+[1173]    0A67: 8B 0E 01 01                           MOV CX, NDIGITSHIGHORDER
+[1174]    0A6B: FF 0E 01 01                           DEC NDIGITSHIGHORDER
+[1175]    0A6F: 83 F9 00                              CMP CX, 0
+[1176]    0A72: 75 EE                                 JNE ELEVADO
 [1177]        :                                       
-[1178]    0A6E:                                       CONCATHIGHORDERRAIZ:   ;CONCATENA O PROXIMO HIGHORDER AO HIGHORDER ATUAL
-[1179]    0A6E: 8B 1E F7 00                           MOV BX, HIGHORDER1
-[1180]    0A72: F7 E3                                 MUL BX
-[1181]    0A74: 03 06 F9 00                           ADD AX, HIGHORDER2
-[1182]    0A78: A3 F7 00                              MOV HIGHORDER1, AX
-[1183]        :                                       
-[1184]    0A7B:                                       OPER1: ;OPERACAO (2*I*10)
-[1185]    0A7B: A1 FB 00                              MOV AX,I
-[1186]    0A7E: BB 02 00                              MOV BX, 2
-[1187]    0A81: F7 E3                                 MUL BX
-[1188]    0A83: BB 0A 00                              MOV BX, 10
-[1189]    0A86: F7 E3                                 MUL BX
-[1190]    0A88: A3 07 01                              MOV AUX, AX
-[1191]        :                                       
-[1192]    0A8B:                                       DESCOBREJ:  ;DESCOBRE O J MAIOR DO QUE O NECESSARIO PARA A PROXIMA OPERACAO
-[1193]    0A8B: FF 06 FD 00                           INC J
-[1194]    0A8F: 8B 1E FD 00                           MOV BX, J
-[1195]    0A93: A1 07 01                              MOV AX, AUX
-[1196]    0A96: 03 C3                                 ADD AX, BX
-[1197]    0A98: F7 E3                                 MUL BX
-[1198]    0A9A: 8B 1E F7 00                           MOV BX, HIGHORDER1
-[1199]    0A9E: 3B C3                                 CMP AX, BX
-[1200]    0AA0: 7F 02                                 JG DECREMENTAJ
-[1201]    0AA2: 7E E7                                 JLE DESCOBREJ
-[1202]        :                                       
-[1203]    0AA4:                                       DECREMENTAJ: ;DECREMENTA J PARA O VALOR NECESSARIO
-[1204]    0AA4: FF 0E FD 00                           DEC J
-[1205]        :                                       
-[1206]    0AA8:                                       OPER2: ; ADICIONA J À VARIAVEL "AUX" E MULTIPLICA POR J O RESULTADO EM AX.
-[1207]    0AA8: A1 07 01                              MOV AX,AUX
-[1208]    0AAB: 8B 1E FD 00                           MOV BX, J
-[1209]    0AAF: 03 06 FD 00                           ADD AX, J
-[1210]    0AB3: F7 26 FD 00                           MUL J
-[1211]    0AB7: A3 07 01                              MOV AUX,AX
-[1212]        :                                       
-[1213]    0ABA:                                       SUBTRACAO2:
-[1214]    0ABA: A1 F7 00                              MOV AX, HIGHORDER1
-[1215]    0ABD: 8B 1E 07 01                           MOV BX, AUX
-[1216]    0AC1: 2B C3                                 SUB AX, BX
-[1217]    0AC3: A3 F7 00                              MOV HIGHORDER1, AX
-[1218]        :                                       
-[1219]    0AC6:                                       CONCATI: ;CONCATENA O I AO I ANTERIOR
-[1220]    0AC6: A1 FB 00                              MOV AX, I
-[1221]    0AC9: BB 0A 00                              MOV BX, 10
-[1222]    0ACC: F7 E3                                 MUL BX
-[1223]    0ACE: 03 06 FD 00                           ADD AX, J
-[1224]    0AD2: A3 FB 00                              MOV I, AX
-[1225]        :                                       
-[1226]    0AD5: 8B 1E 03 01                           MOV BX, ARRAYPOSATUAL
-[1227]    0AD9: 83 C3 01                              ADD BX, 1
-[1228]    0ADC: 80 BF EB 00 0A                        CMP radicandoArray[BX],10
-[1229]    0AE1: 74 03 E9 38 FF                        JNE GETNEXTHIGHORDERPAIR
-[1230]    0AE6: 74 00                                 JE FINALRESULT1
-[1231]        :                                       
-[1232]    0AE8:                                       FINALRESULT1: ;MOSTRA O RESULTADO FINAL
-[1233]    0AE8: C7 06 05 01 00 00                     MOV RESULTFINAL,0
-[1234]    0AEE: A1 FB 00                              MOV AX,I
-[1235]    0AF1: A3 05 01                              MOV RESULTFINAL, AX
-[1236]        :                                       
-[1237]    0AF4: C7 06 D3 00 00 00                     MOV ARRAYPOS,0
-[1238]    0AFA: 8B 1E D3 00                           MOV BX, ARRAYPOS
-[1239]    0AFE: 80 BF EB 00 00                        CMP radicandoArray[BX],0
-[1240]    0B03: 74 00                                 JE FINAL
-[1241]        :                                       
-[1242]    0B05:                                       FINAL:
-[1243]    0B05: C3                                    RET
-[1244]        :                                       ENDP
-[1245]        :                                       
+[1178]        :                                       
+[1179]    0A74:                                       CONCATHIGHORDERRAIZ:   ;CONCATENA O PROXIMO HIGHORDER AO HIGHORDER ATUAL
+[1180]    0A74: 8B 1E F7 00                           MOV BX, HIGHORDER1
+[1181]    0A78: F7 E3                                 MUL BX
+[1182]    0A7A: 03 06 F9 00                           ADD AX, HIGHORDER2
+[1183]    0A7E: A3 F7 00                              MOV HIGHORDER1, AX
+[1184]        :                                       
+[1185]    0A81:                                       OPER1: ;OPERACAO (2*I*10)
+[1186]    0A81: A1 FB 00                              MOV AX,I
+[1187]    0A84: BB 02 00                              MOV BX, 2
+[1188]    0A87: F7 E3                                 MUL BX
+[1189]    0A89: BB 0A 00                              MOV BX, 10
+[1190]    0A8C: F7 E3                                 MUL BX
+[1191]    0A8E: A3 07 01                              MOV AUX, AX
+[1192]        :                                       
+[1193]    0A91:                                       DESCOBREJ:  ;DESCOBRE O J MAIOR DO QUE O NECESSARIO PARA A PROXIMA OPERACAO
+[1194]    0A91: FF 06 FD 00                           INC J
+[1195]    0A95: 8B 1E FD 00                           MOV BX, J
+[1196]    0A99: A1 07 01                              MOV AX, AUX
+[1197]    0A9C: 03 C3                                 ADD AX, BX
+[1198]    0A9E: F7 E3                                 MUL BX
+[1199]    0AA0: 8B 1E F7 00                           MOV BX, HIGHORDER1
+[1200]    0AA4: 3B C3                                 CMP AX, BX
+[1201]    0AA6: 7F 02                                 JG DECREMENTAJ
+[1202]    0AA8: 7E E7                                 JLE DESCOBREJ
+[1203]        :                                       
+[1204]    0AAA:                                       DECREMENTAJ: ;DECREMENTA J PARA O VALOR NECESSARIO
+[1205]    0AAA: FF 0E FD 00                           DEC J
+[1206]        :                                       
+[1207]    0AAE:                                       OPER2: ; ADICIONA J À VARIAVEL "AUX" E MULTIPLICA POR J O RESULTADO EM AX.
+[1208]    0AAE: A1 07 01                              MOV AX,AUX
+[1209]    0AB1: 8B 1E FD 00                           MOV BX, J
+[1210]    0AB5: 03 06 FD 00                           ADD AX, J
+[1211]    0AB9: F7 26 FD 00                           MUL J
+[1212]    0ABD: A3 07 01                              MOV AUX,AX
+[1213]        :                                       
+[1214]    0AC0:                                       SUBTRACAO2:
+[1215]    0AC0: A1 F7 00                              MOV AX, HIGHORDER1
+[1216]    0AC3: 8B 1E 07 01                           MOV BX, AUX
+[1217]    0AC7: 2B C3                                 SUB AX, BX
+[1218]    0AC9: A3 F7 00                              MOV HIGHORDER1, AX
+[1219]        :                                       
+[1220]    0ACC:                                       CONCATI: ;CONCATENA O I AO I ANTERIOR
+[1221]    0ACC: A1 FB 00                              MOV AX, I
+[1222]    0ACF: BB 0A 00                              MOV BX, 10
+[1223]    0AD2: F7 E3                                 MUL BX
+[1224]    0AD4: 03 06 FD 00                           ADD AX, J
+[1225]    0AD8: A3 FB 00                              MOV I, AX
+[1226]        :                                       
+[1227]    0ADB: 8B 1E 03 01                           MOV BX, ARRAYPOSATUAL
+[1228]    0ADF: 83 C3 01                              ADD BX, 1
+[1229]    0AE2: 80 BF EB 00 0A                        CMP radicandoArray[BX],10
+[1230]    0AE7: 74 03 E9 38 FF                        JNE GETNEXTHIGHORDERPAIR
+[1231]    0AEC: 74 00                                 JE FINALRESULT1
+[1232]        :                                       
+[1233]    0AEE:                                       FINALRESULT1: ;MOSTRA O RESULTADO FINAL
+[1234]    0AEE: C7 06 05 01 00 00                     MOV RESULTFINAL,0
+[1235]    0AF4: A1 FB 00                              MOV AX,I
+[1236]    0AF7: A3 05 01                              MOV RESULTFINAL, AX
+[1237]        :                                       
+[1238]    0AFA: C7 06 D3 00 00 00                     MOV ARRAYPOS,0
+[1239]    0B00: 8B 1E D3 00                           MOV BX, ARRAYPOS
+[1240]    0B04: 80 BF EB 00 00                        CMP radicandoArray[BX],0
+[1241]    0B09: 74 00                                 JE FINAL
+[1242]        :                                       
+[1243]    0B0B:                                       FINAL:
+[1244]    0B0B: C3                                    RET
+[1245]        :                                       ENDP
 [1246]        :                                       
-[1247]    0B06:                                       MAIN PROC
-[1248]    0B06: BA 00 00                              MOV DX, @DATA           ; Variaveis
-[1249]    0B09: 8E DA                                 MOV DS, DX
-[1250]        :                                       
+[1247]        :                                       
+[1248]    0B0C:                                       MAIN PROC
+[1249]    0B0C: BA 00 00                              MOV DX, @DATA           ; Variaveis
+[1250]    0B0F: 8E DA                                 MOV DS, DX
 [1251]        :                                       
-[1252]    0B0B: E8 AB FC                              CALL CLEARSCREEN
-[1253]        :                                       
-[1254]    0B0E: E8 BD F7                              CALL showMainScreen
-[1255]        :                                       ENDP
-[1256]        :                                       END MAIN
-[1257]        :                                       
+[1252]        :                                       
+[1253]    0B11: E8 A5 FC                              CALL CLEARSCREEN
+[1254]        :                                       
+[1255]    0B14: E8 B7 F7                              CALL showMainScreen
+[1256]        :                                       ENDP
+[1257]        :                                       END MAIN
 [1258]        :                                       
 [1259]        :                                       
+[1260]        :                                       
  
 ===================================================================================================
  
@@ -1286,7 +1287,7 @@ EXE HEADER - bytes from 0000 to 01FF inclusive.
 
 0000: 4D      -   exe signature (M)
 0001: 5A      -   exe signature (Z)
-0002: 11      -   bytes on last page (l.byte)
+0002: 17      -   bytes on last page (l.byte)
 0003: 01      -   bytes on last page (h.byte)
 0004: 07      -   512 byte pages in file (l.byte)
 0005: 00      -   512 byte pages in file (h.byte)
@@ -1302,9 +1303,9 @@ EXE HEADER - bytes from 0000 to 01FF inclusive.
 000F: 00      -   SS - stack segment (h.byte)
 0010: 00      -   SP - stack pointer (l.byte)
 0011: 00      -   SP - stack pointer (h.byte)
-0012: AF      -   check sum (l.byte)
-0013: C0      -   check sum (h.byte)
-0014: E6      -   IP - instruction pointer (l.byte)
+0012: 11      -   check sum (l.byte)
+0013: B9      -   check sum (h.byte)
+0014: EC      -   IP - instruction pointer (l.byte)
 0015: 09      -   IP - instruction pointer (h.byte)
 0016: 12      -   CS - code segment (l.byte)
 0017: 00      -   CS - code segment (h.byte)
@@ -1314,7 +1315,7 @@ EXE HEADER - bytes from 0000 to 01FF inclusive.
 001B: 00      -   overlay number (h.byte)
 001C: 01      -   signature (l.byte)
 001D: 00      -   signature (h.byte)
-001E: E7      -   relocation table - offset inside segment (l.byte)
+001E: ED      -   relocation table - offset inside segment (l.byte)
 001F: 09      -   relocation table - offset inside segment (h.byte)
 0020: 12      -   relocation table - segment anchor (l.byte)
 0021: 00      -   relocation table - segment anchor (h.byte)

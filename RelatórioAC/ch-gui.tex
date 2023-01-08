@@ -55,6 +55,7 @@ Para fazer esta verificação, basta confirmar que o tamanho do array do dividen
 
 \section{Fluxograma}
 \subsection{ShowMainScreen}
+Procedimento responsável por desenhar e receber input da tela inicial do programa.\\
 \fbox{
 \begin{tikzpicture}[node distance=2cm]
 	% Nodos
@@ -76,6 +77,7 @@ Para fazer esta verificação, basta confirmar que o tamanho do array do dividen
 \end{tikzpicture}}
 
 \subsection{WelcomeWindow}
+Procedimento que imprime o texto de introdução ao programa.\\
 \fbox{
 	\begin{tikzpicture}[node distance=2cm]
 		% Nodos
@@ -95,6 +97,7 @@ Para fazer esta verificação, basta confirmar que o tamanho do array do dividen
 \end{tikzpicture}}
 
 \subsection{InsideSquareText}
+Procedimento que adiciona o texto de escolha dos algoritmos dentro dos botões desenhados posteriormente.\\
 \fbox{
 	\begin{tikzpicture}[node distance=2cm]
 		% Nodos
@@ -108,8 +111,9 @@ Para fazer esta verificação, basta confirmar que o tamanho do array do dividen
 		\draw [arrow] (pr1) -- (pr2) ;
 		\draw [arrow] (pr2) -- (end) ;
 \end{tikzpicture}}
-
+\pagebreak
 \subsection{DesenhaQuadrados}
+Procedimento onde são desenhados os quadrados/botões que permitem uma visualização de onde clicar quando se utiliza o mouse como método de input.\\
 \fbox{
 	\begin{tikzpicture}[node distance=2cm]
 		% Nodos
@@ -146,6 +150,7 @@ Para fazer esta verificação, basta confirmar que o tamanho do array do dividen
 \end{tikzpicture}} 
 
 \subsection{RecebeMouseKeyboardInput}
+Procedimento responsável por receber primeiramente, o método de input desejado e em seguida (dependendo do método escolhido), verificar qual tecla do teclado foi pressionada ou em qual dos botões desenhados o utilizador clicou.\\
 \fbox{
 \begin{tikzpicture}[node distance=2cm]
 		% Nodos
@@ -173,13 +178,14 @@ Para fazer esta verificação, basta confirmar que o tamanho do array do dividen
 		\draw[arrow] (pr4) -- node[anchor=south, text width=30mm]{Input escolhido = tecla pressionada}(end);
 		\draw[arrow] (pr6) -| node[anchor=north, text width=30mm]{Input escolhido = botão clicado}(end);
 \end{tikzpicture}}
-
+\pagebreak
 \titleformat{\subsection}[runin]
 {\normalfont\large\bfseries}{\thesubsection}{1em}{}
 \subsection{KbHandlerInputScreen} \hfill \textcolor{red}{\underline{Exemplo do input da divisão}}
 \titleformat{\subsection}[block]
-{\normalfont\large\bfseries}{\thesubsection}{1em}{}
-\fbox{
+{\normalfont\large\bfseries}{\thesubsection}{1em}{}\\ \\
+Procedimento que processa e verifica todo o input, dentro da InputScreen. Capaz de, voltar à tela principal utilizando o Escape, adicionar sinais de negativo às respetivas variáveis utilizando "-", adicionar dígitos aos arrays e imprimir esses mesmos dígitos utilizando as teclas 0-9, eliminar o ultimo digito inserido utilizando o backspace, e confirmar os dados inseridos utilizando o Enter.
+\\ \fbox{
 \begin{tikzpicture}[node distance=2cm]
 	% Nodos
 	\node(start)[startstop]{Inicio};
