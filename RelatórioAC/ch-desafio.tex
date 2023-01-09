@@ -1,0 +1,33 @@
+\chapter{Desafio}
+\subsection{Pseudocódigo}
+\begin{enumerate}
+	\item Reconhecer X,Y iniciais
+	\item Reconhecer limites de X e Y
+	\item Iniciar o desenho de uma diagonal no canto superior direito até ao canto inferior esquerdo
+	\item Incrementando Y e decrementando X
+	\item Ao clicar na tecla do 6, chamar o procedimento Diagonal
+\end{enumerate}
+
+\subsection{Fluxograma}
+\fbox{
+\begin{tikzpicture}[node distance=2cm]
+	\node (start) [startstop] {Inicio};
+	\node (dec1) [decision, right of=start, xshift=3cm, text width=20mm] {Tecla pressionada = 6?};
+	\node (pr1) [process, right of=dec1, xshift=3cm] {Inicializa as variáveis (x,y) com os valores desejados};
+	\node (pr2) [process, right of=pr1, xshift=2cm] {Desenha um pixel em (x,y)};
+	\node (pr3) [process, below of=pr2] {Decrementa x e incrementa y};
+	\node (dec2) [decision, left of=pr3, xshift=-2cm, text width=20mm] {x<54};
+	\node (end) [startstop, below of= start] {Fim};
+	
+	% Setas
+	\draw [arrow] (start) -- (dec1) ;
+	\draw [arrow] (dec1) --  node[anchor=south]{sim}(pr1) ;
+	\draw [arrow] (dec1) |-  node[anchor=south]{não}(3,1.5) -| (start) ;
+	\draw[arrow] (pr1) -- (pr2);
+	\draw[arrow] (pr2) -- (pr3);
+	\draw[arrow] (pr3) -- node[anchor=north]{sim}(dec2);
+	\draw[arrow] (dec2) -- node[anchor=north]{sim}(end);
+	\draw[arrow] (dec2) -- node[anchor=east]{não}(pr2);
+	
+	
+\end{tikzpicture}}
